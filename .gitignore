@@ -1,0 +1,50 @@
+# Logs
+logs/*
+!logs/.gitkeep  # Если нужно закоммитить пустую папку logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Temporary files
+*~
+\#*
+*.swp
+*.bak
+*.tmp
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# JetBrains IDE
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/scopes/*
+.idea/shelf/*
+.idea/dataSources/*
+.idea/modules.xml
+.idea/codeStyles/*
+
+# OS generated files #
+._*
