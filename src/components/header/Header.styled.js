@@ -11,13 +11,12 @@ export const HeaderContainer = styled.header`
 export const HeaderBlock = styled.div`
     height: 70px;
     width: 64px;
+    left: 90px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     position: relative;
-    top: 0;
-    padding: 0 10px;
     max-width: 1260px;
     flex-direction: row;
     align-content: space-around;
