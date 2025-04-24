@@ -105,6 +105,10 @@ export const ModalBtnEnter = styled.button`
     vertical-align: middle;
     background-color: #1fa46c;
 
+    &:hover {
+        background-color: #16784f;
+    }
+
     &:disabled {
         background-color: #999999;
         cursor: not-allowed;
@@ -130,6 +134,7 @@ export const ModalFormGroup = styled.div`
         text-decoration: underline;
         &:hover {
             text-decoration: underline;
+            color: #4f4f4f;
         }
     }
 `
