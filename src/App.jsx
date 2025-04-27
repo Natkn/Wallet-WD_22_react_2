@@ -10,10 +10,7 @@ function App() {
         <>
             <GlobalStyles />
             <Header />
-feature-env
             <AuthForm />
-
- main
             <MainPage />
         </>
     )
