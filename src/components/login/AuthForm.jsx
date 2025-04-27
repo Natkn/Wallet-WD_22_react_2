@@ -40,8 +40,7 @@ function AuthForm() {
         password: '',
     })
 
-    const [setError] = useState('')
-
+    const [formError, setFormError] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(false)
 
     const handleChange = (e) => {
@@ -53,35 +52,40 @@ function AuthForm() {
 
     const validateField = (fieldName, value) => {
         let isValid = false
-        let error = ''
-
         switch (fieldName) {
             case 'name':
                 isValid = isSignUp
                     ? value.length > 0 && !/\d/.test(value)
                     : true
-                error = isValid ? '' : 'Пожалуйста, введите ваше имя.'
                 break
             case 'login':
                 isValid = isValidEmail(value)
-                error = isValid ? '' : 'Пожалуйста, введите корректный email.'
                 break
             case 'password':
                 isValid = value.length >= 6
-                error = isValid
-                    ? ''
-                    : 'Пароль должен содержать не менее 6 символов.'
                 break
             default:
                 break
         }
-
         setFieldValid((prev) => ({ ...prev, [fieldName]: isValid }))
         setErrors((prev) => ({
             ...prev,
-            [fieldName]: error,
+            [fieldName]: isValid ? '' : getErrorMessage(fieldName),
         }))
         return isValid
+    }
+
+    const getErrorMessage = (fieldName) => {
+        switch (fieldName) {
+            case 'name':
+                return 'Пожалуйста, введите ваше имя.'
+            case 'login':
+                return 'Пожалуйста, введите корректный email.'
+            case 'password':
+                return 'Пароль должен содержать не менее 6 символов.'
+            default:
+                return ''
+        }
     }
 
     useEffect(() => {
@@ -116,12 +120,12 @@ function AuthForm() {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             setIsButtonDisabled(true)
-            setError('Пожалуйста, исправьте ошибки в форме.')
-            return newErrors
+            setFormError('Пожалуйста, исправьте ошибки в форме.')
+            return
         }
 
         setErrors({})
-        setError('')
+        setFormError('')
         setIsButtonDisabled(false)
         navigate('/main')
     }
@@ -198,6 +202,9 @@ function AuthForm() {
                                 <p style={{ color: 'red', fontSize: '0.8em' }}>
                                     {errors.password}
                                 </p>
+                            )}
+                            {formError && (
+                                <p className="error-message">{formError}</p>
                             )}
                             <ModalBtnEnter
                                 type="submit"
