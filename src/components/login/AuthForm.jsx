@@ -100,6 +100,7 @@ function AuthForm() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        navigate('/main')
 
         let newErrors = {}
         if (isSignUp && !formData.name) {

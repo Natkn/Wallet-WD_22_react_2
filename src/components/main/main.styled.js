@@ -4,6 +4,7 @@ export const MainBlock = styled.div`
     height: 100vh;
     background: #f4f5f6;
     margin-left: 118px;
+    margin-top: 32px;
 `
 
 export const H2 = styled.h2`
@@ -40,8 +41,8 @@ export const NewExpenseContainer = styled.div`
     background-color: #fff;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-left: 40px;
-    padding: 20px;
+    margin-left: 36px;
+    padding: 32px;
 `
 
 export const TableHeader = styled.div`
@@ -64,9 +65,8 @@ export const H3 = styled.h3`
 `
 export const FiltersContainer = styled.div`
     display: flex;
-    gap: 20px;
+    gap: 22px;
     margin-bottom: 10px;
-    margin-right: 8px;
     margin-top: 10px;
     font-weight: 400;
     font-size: 12px;
@@ -102,7 +102,7 @@ export const TableHeaderCell = styled.th`
     }
 
     &:last-child {
-        padding-right: 50px;
+        padding-right: 108px;
     }
 
     &:nth-child(2) {
@@ -130,47 +130,75 @@ export const TableCell = styled.td`
     }
 
     &:last-child {
-        padding-right: 32px;
+        padding-right: 12px;
     }
 
     &:nth-child(3) {
         width: 170px;
     }
+
+    &:nth-child(5) {
+        width: 12px;
+        padding-left: 82px;
+    }
 `
 
 export const NewExpenseTitle = styled.h2`
-    text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 26px;
 `
 
 export const InputLabel = styled.label`
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0px;
 `
 
 export const InputField = styled.input`
-    width: 90%;
-    padding: 8px;
-    margin-bottom: 15px;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 22px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+
+    &:focus {
+        border-color: #1fa46c;
+        outline: none;
+    }
 `
 
 export const CategoryButtonsContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    margin-bottom: 15px;
+    gap: 6px;
+    margin-bottom: 26px;
 `
 
 export const CategoryButton = styled.button`
     background-color: #eee;
     border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 5px;
-    width: 45%;
+    border-radius: 30px;
+    padding-top: 8px;
+    padding-right: 20px;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    text-align: center;
+    vertical-align: middle;
 
     &:hover {
         background-color: #ddd;
@@ -178,15 +206,25 @@ export const CategoryButton = styled.button`
 `
 
 export const AddExpenseButton = styled.button`
-    background-color: #4caf50;
+    background-color: #1fa46c;
     color: white;
-    padding: 12px 20px;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
+    width: 313px;
+    height: 39px;
+    border-radius: 6px;
+    gap: 12px;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    text-align: center;
+    vertical-align: middle;
 
     &:hover {
-        background-color: #3e8e41;
+        background-color: #147049;
     }
 `
