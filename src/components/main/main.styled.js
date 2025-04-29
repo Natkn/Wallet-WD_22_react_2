@@ -1,11 +1,12 @@
 import styled from 'styled-components'
 
 export const MainBlock = styled.div`
-    height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
     background: #f4f5f6;
-    margin-left: 118px;
-    margin-top: 32px;
-`
+    min-height: 100vh;
+`;
 
 export const H2 = styled.h2`
     font-weight: 700;
@@ -22,8 +23,9 @@ export const MainPageContainer = styled.div`
 
 export const ContentContainer = styled.div`
     display: flex;
+    gap: 34px;
     margin-top: 32px;
-`
+`;
 
 export const ExpensesTableContainer = styled.div`
     width: 789px;
@@ -41,7 +43,6 @@ export const NewExpenseContainer = styled.div`
     background-color: #fff;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-left: 36px;
     padding: 32px;
 `
 
