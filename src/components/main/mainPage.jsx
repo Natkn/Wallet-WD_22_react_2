@@ -160,19 +160,6 @@ function MainPage() {
         setAmountError(false);
     };
 
-    const handleCancelEdit = () => {
-        setEditMode(false);
-        setEditingExpenseIndex(null);
-        setNewDescription('');
-        setNewCategory('');
-        setNewDate('');
-        setNewAmount('');
-        setErrors({ description: false, category: false, date: false, amount: false });
-        setDescriptionError(false);
-        setDateError(false);
-        setAmountError(false);
-    };
-
     const handleAddExpense = () => {
         const newErrors = {
             description: !newDescription,
