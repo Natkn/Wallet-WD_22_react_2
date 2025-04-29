@@ -9,6 +9,9 @@ export const MainBlock = styled.div`
     flex-direction: column;
     flex-wrap: wrap;
     align-content: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 `
 
 export const H2 = styled.h2`
@@ -35,7 +38,6 @@ export const NewExpenseContainer = styled.div`
     width: 379px;
     height: 542px;
     padding: 32px;
-    border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #fff;
     border-radius: 30px;

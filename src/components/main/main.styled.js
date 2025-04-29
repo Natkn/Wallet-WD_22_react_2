@@ -1,91 +1,141 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 export const MainBlock = styled.div`
-    height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
     background: #f4f5f6;
-    margin-left: 118px;
-    margin-top: 32px;
-`
+    min-height: 100vh;
+`;
 
 export const H2 = styled.h2`
     font-weight: 700;
     font-size: 32px;
     line-height: 150%;
     letter-spacing: 0px;
-`
-
-export const MainPageContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-`
+`;
 
 export const ContentContainer = styled.div`
     display: flex;
     margin-top: 32px;
-`
+    gap: 36px;
+`;
 
 export const ExpensesTableContainer = styled.div`
     width: 789px;
-    height: 618px;
     border-radius: 30px;
     background-color: #fff;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-`
+    padding: 32px;
+`;
 
 export const NewExpenseContainer = styled.div`
     width: 379px;
-    height: 618px;
     border-radius: 30px;
     background-color: #fff;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-left: 36px;
     padding: 32px;
-`
+`;
 
 export const TableHeader = styled.div`
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 20px;
-    margin-top: 32px;
-    padding-right: 32px;
-`
+`;
+
 export const H3 = styled.h3`
     font-weight: 700;
     font-size: 24px;
     line-height: 100%;
     letter-spacing: 0px;
-    text-align: center;
     vertical-align: middle;
-    margin-left: 32px;
-`
+`;
+
 export const FiltersContainer = styled.div`
     display: flex;
-    gap: 22px;
-    margin-bottom: 10px;
-    margin-top: 10px;
+    gap: 16px;
     font-weight: 400;
     font-size: 12px;
     line-height: 150%;
     letter-spacing: 0px;
-    text-align: center;
     vertical-align: middle;
-`
+`;
+
+export const FilterWrapper = styled.div`
+    position: relative;
+    display: inline-block;
+`;
+
+export const FilterButton = styled.button`
+    background: none;
+    border: none;
+    padding: 0;
+    display: block;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    cursor: pointer;
+`;
+
+export const GreenLink = styled.span`
+    color: #1fa46c;
+    &:hover {
+        text-decoration: underline;
+    }
+`;
+
+export const DropdownMenu = styled.div`
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px; 
+`;
+
+export const DropdownItem = styled.div`
+    padding: 8px 20px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 7px;
+    width: fit-content;
+    border-radius: 30px;
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &:hover {
+        background-color: #f0f0f0;
+    }
+`;
 
 export const Table = styled.table`
     width: 100%;
     border-collapse: collapse;
     position: relative;
-`
+`;
 
 export const TableHead = styled.thead`
     color: #999999;
     border-bottom: 1px solid #ddd;
-`
+`;
 
 export const TableHeaderCell = styled.th`
     padding-top: 6px;
@@ -98,7 +148,7 @@ export const TableHeaderCell = styled.th`
     vertical-align: middle;
 
     &:first-child {
-        padding-left: 32px;
+        padding-left: 0;
     }
 
     &:last-child {
@@ -111,7 +161,7 @@ export const TableHeaderCell = styled.th`
     &:nth-child(3) {
         width: 170px;
     }
-`
+`;
 
 export const TableRow = styled.tr`
     font-weight: 400;
@@ -119,13 +169,13 @@ export const TableRow = styled.tr`
     line-height: 100%;
     letter-spacing: 0px;
     vertical-align: middle;
-`
+`;
 
 export const TableCell = styled.td`
     padding-top: 20px;
 
     &:first-child {
-        padding-left: 32px;
+        padding-left: 0;
         padding-right: 10px;
     }
 
@@ -141,11 +191,14 @@ export const TableCell = styled.td`
         width: 12px;
         padding-left: 82px;
     }
-`
+`;
 
 export const NewExpenseTitle = styled.h2`
     margin-bottom: 26px;
-`
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 100%;
+`;
 
 export const InputLabel = styled.label`
     display: block;
@@ -154,7 +207,7 @@ export const InputLabel = styled.label`
     font-size: 16px;
     line-height: 100%;
     letter-spacing: 0px;
-`
+`;
 
 export const InputField = styled.input`
     width: 100%;
@@ -172,14 +225,14 @@ export const InputField = styled.input`
         border-color: #1fa46c;
         outline: none;
     }
-`
+`;
 
 export const CategoryButtonsContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 26px;
-`
+`;
 
 export const CategoryButton = styled.button`
     background-color: #eee;
@@ -203,7 +256,7 @@ export const CategoryButton = styled.button`
     &:hover {
         background-color: #ddd;
     }
-`
+`;
 
 export const AddExpenseButton = styled.button`
     background-color: #1fa46c;
@@ -223,8 +276,11 @@ export const AddExpenseButton = styled.button`
     letter-spacing: 0px;
     text-align: center;
     vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
         background-color: #147049;
     }
-`
+`;
