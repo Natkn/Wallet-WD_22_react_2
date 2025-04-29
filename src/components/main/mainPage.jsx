@@ -1,21 +1,66 @@
-import { useState } from 'react'
-import * as S from './main.styled'
-import ArrowIcon from '../../../public/ArrowIcon.svg'
+import { useState } from 'react';
+import * as S from './main.styled';
 
 function MainPage() {
     const [expenses, setExpenses] = useState([
         {
-            description: 'Пятерочка',
+            description: 'Пятёрочка',
             category: 'Еда',
             date: '03.07.2024',
             amount: '3 500 ₽',
         },
-    ])
+        {
+            description: 'Метро',
+            category: 'Транспорт',
+            date: '02.07.2024',
+            amount: '200 ₽',
+        },
+        {
+            description: 'Квартплата',
+            category: 'Жильё',
+            date: '01.07.2024',
+            amount: '5 000 ₽',
+        },
+    ]);
 
-    const [newDescription, setNewDescription] = useState('')
-    const [newCategory, setNewCategory] = useState('')
-    const [newDate, setNewDate] = useState('')
-    const [newAmount, setNewAmount] = useState('')
+    const [newDescription, setNewDescription] = useState('');
+    const [newCategory, setNewCategory] = useState('');
+    const [newDate, setNewDate] = useState('');
+    const [newAmount, setNewAmount] = useState('');
+
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [sortOrder, setSortOrder] = useState('Дата');
+    const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+    const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+
+    const categories = ['Еда', 'Транспорт', 'Жильё', 'Развлечения', 'Образование', 'Другое'];
+    const sortOptions = ['Дата', 'Сумма'];
+
+    const categoryIcons = {
+        Еда: (
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 12 13"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M9.62 3.29003H9.42L7.73 1.60003C7.595 1.46503 7.375 1.46503 7.235 1.60003C7.1 1.73503 7.1 1.95503 7.235 2.09503L8.43 3.29003H3.57L4.765 2.09503C4.9 1.96003 4.9 1.74003 4.765 1.60003C4.63 1.46503 4.41 1.46503 4.27 1.60003L2.585 3.29003H2.385C1.935 3.29003 1 3.29003 1 4.57003C1 5.05503 1.1 5.37503 1.31 5.58503C1.43 5.71003 1.575 5.77503 1.73 5.81003C1.875 5.84503 2.03 5.85003 2.18 5.85003H9.82C9.975 5.85003 10.12 5.84003 10.26 5.81003C10.68 5.71003 11 5.41003 11 4.57003C11 3.29003 10.065 3.29003 9.62 3.29003Z"
+                    fill="#000000"
+                />
+                <path
+                    d="M9.52502 6.5H2.43502C2.12502 6.5 1.89002 6.775 1.94002 7.08L2.36002 9.65C2.50002 10.51 2.87502 11.5 4.54002 11.5H7.34502C9.03002 11.5 9.33002 10.655 9.51002 9.71L10.015 7.095C10.075 6.785 9.84002 6.5 9.52502 6.5ZM5.30502 9.725C5.30502 9.92 5.15002 10.075 4.96002 10.075C4.76502 10.075 4.61002 9.92 4.61002 9.725V8.075C4.61002 7.885 4.76502 7.725 4.96002 7.725C5.15002 7.725 5.30502 7.885 5.30502 8.075V9.725ZM7.44502 9.725C7.44502 9.92 7.29002 10.075 7.09502 10.075C6.90502 10.075 6.74502 9.92 6.74502 9.725V8.075C6.74502 7.885 6.90502 7.725 7.09502 7.725C7.29002 7.725 7.44502 7.885 7.44502 8.075V9.725Z"
+                    fill="#000000"
+                />
+            </svg>
+        ),
+        Транспорт: '/car (1).svg',
+        Жильё: '/HouseIcon.svg',
+        Развлечения: '/PlayIcon.svg',
+        Образование: '/StudyIcon.svg',
+        Другое: '/OtherIcon.svg',
+    };
 
     const handleAddExpense = () => {
         const newExpense = {
@@ -23,15 +68,51 @@ function MainPage() {
             category: newCategory,
             date: newDate,
             amount: newAmount,
+        };
+
+        setExpenses([...expenses, newExpense]);
+
+        setNewDescription('');
+        setNewCategory('');
+        setNewDate('');
+        setNewAmount('');
+    };
+
+    const toggleCategoryDropdown = () => {
+        setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+        setIsSortDropdownOpen(false);
+    };
+
+    const toggleSortDropdown = () => {
+        setIsSortDropdownOpen(!isSortDropdownOpen);
+        setIsCategoryDropdownOpen(false);
+    };
+
+    const handleCategorySelect = (category) => {
+        setSelectedCategory(category);
+        setIsCategoryDropdownOpen(false);
+    };
+
+    const handleSortSelect = (order) => {
+        setSortOrder(order);
+        setIsSortDropdownOpen(false);
+    };
+
+    const filteredExpenses = selectedCategory
+        ? expenses.filter((expense) => expense.category === selectedCategory)
+        : expenses;
+
+    const sortedExpenses = [...filteredExpenses].sort((a, b) => {
+        if (sortOrder === 'Дата') {
+            const dateA = new Date(a.date.split('.').reverse().join('-'));
+            const dateB = new Date(b.date.split('.').reverse().join('-'));
+            return dateB - dateA;
+        } else {
+            const amountA = parseFloat(a.amount.replace(' ₽', '').replace(' ', ''));
+            const amountB = parseFloat(b.amount.replace(' ₽', '').replace(' ', ''));
+            return amountB - amountA;
         }
-
-        setExpenses([...expenses, newExpense])
-
-        setNewDescription('')
-        setNewCategory('')
-        setNewDate('')
-        setNewAmount('')
-    }
+    });
 
     return (
         <S.MainBlock>
@@ -40,29 +121,70 @@ function MainPage() {
                 <S.ExpensesTableContainer>
                     <S.TableHeader>
                         <S.H3>Таблица расходов</S.H3>
-                        <S.FiltersContainer>
-                            <div>
-                                Фильтровать по категории{' '}
-                                <img
-                                    src={ArrowIcon}
-                                    alt="Arrow Icon"
-                                    style={{
-                                        marginLeft: '8px',
-                                        height: '7px',
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                Сортировать по дате
-                                <img
-                                    src={ArrowIcon}
-                                    alt="Arrow Icon"
-                                    style={{
-                                        marginLeft: '8px',
-                                        height: '7px',
-                                    }}
-                                />
-                            </div>
+                        <S.FiltersContainer style={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }}>
+                            <S.FilterWrapper>
+                                <S.FilterButton onClick={toggleCategoryDropdown}>
+                                    Фильтровать по категории <S.GreenLink>{selectedCategory || 'выбрать'}</S.GreenLink>
+                                    <img
+                                        src="/ArrowIcon.svg"
+                                        alt="Arrow Icon"
+                                        style={{
+                                            marginLeft: '8px',
+                                            height: '7px',
+                                            transform: isCategoryDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                        }}
+                                    />
+                                </S.FilterButton>
+                                {isCategoryDropdownOpen && (
+                                    <S.DropdownMenu>
+                                        {categories.map((category) => (
+                                            <S.DropdownItem
+                                                key={category}
+                                                onClick={() => handleCategorySelect(category)}
+                                            >
+                                                {categoryIcons[category] && (
+                                                    typeof categoryIcons[category] === 'string' ? (
+                                                        <img
+                                                            src={categoryIcons[category]}
+                                                            alt={`${category} icon`}
+                                                            style={{ width: '14px', height: '14px' }}
+                                                        />
+                                                    ) : (
+                                                        categoryIcons[category]
+                                                    )
+                                                )}
+                                                {category}
+                                            </S.DropdownItem>
+                                        ))}
+                                    </S.DropdownMenu>
+                                )}
+                            </S.FilterWrapper>
+                            <S.FilterWrapper>
+                                <S.FilterButton onClick={toggleSortDropdown}>
+                                    Сортировать по <S.GreenLink>{sortOrder.toLowerCase()}</S.GreenLink>
+                                    <img
+                                        src="/ArrowIcon.svg"
+                                        alt="Arrow Icon"
+                                        style={{
+                                            marginLeft: '8px',
+                                            height: '7px',
+                                            transform: isSortDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                        }}
+                                    />
+                                </S.FilterButton>
+                                {isSortDropdownOpen && (
+                                    <S.DropdownMenu>
+                                        {sortOptions.map((option) => (
+                                            <S.DropdownItem
+                                                key={option}
+                                                onClick={() => handleSortSelect(option)}
+                                            >
+                                                {option}
+                                            </S.DropdownItem>
+                                        ))}
+                                    </S.DropdownMenu>
+                                )}
+                            </S.FilterWrapper>
                         </S.FiltersContainer>
                     </S.TableHeader>
                     <S.Table>
@@ -76,17 +198,12 @@ function MainPage() {
                             </S.TableRow>
                         </S.TableHead>
                         <tbody>
-                            {expenses.map((expense, index) => (
+                            {sortedExpenses.map((expense, index) => (
                                 <S.TableRow key={index}>
-                                    <S.TableCell>
-                                        {expense.description}
-                                    </S.TableCell>
-                                    <S.TableCell>
-                                        {expense.category}
-                                    </S.TableCell>
+                                    <S.TableCell>{expense.description}</S.TableCell>
+                                    <S.TableCell>{expense.category}</S.TableCell>
                                     <S.TableCell>{expense.date}</S.TableCell>
                                     <S.TableCell>{expense.amount}</S.TableCell>
-
                                     <S.TableCell>
                                         <button
                                             style={{
@@ -165,115 +282,27 @@ function MainPage() {
                     <S.InputLabel>Категория:</S.InputLabel>
                     <S.CategoryButtonsContainer>
                         <S.CategoryButton onClick={() => setNewCategory('Еда')}>
-                            <svg
-                                width="14"
-                                height="14"
-                                viewBox="0 0 12 13"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M9.62 3.29003H9.42L7.73 1.60003C7.595 1.46503 7.375 1.46503 7.235 1.60003C7.1 1.73503 7.1 1.95503 7.235 2.09503L8.43 3.29003H3.57L4.765 2.09503C4.9 1.96003 4.9 1.74003 4.765 1.60003C4.63 1.46503 4.41 1.46503 4.27 1.60003L2.585 3.29003H2.385C1.935 3.29003 1 3.29003 1 4.57003C1 5.05503 1.1 5.37503 1.31 5.58503C1.43 5.71003 1.575 5.77503 1.73 5.81003C1.875 5.84503 2.03 5.85003 2.18 5.85003H9.82C9.975 5.85003 10.12 5.84003 10.26 5.81003C10.68 5.71003 11 5.41003 11 4.57003C11 3.29003 10.065 3.29003 9.62 3.29003Z"
-                                    fill="#000000"
-                                />
-                                <path
-                                    d="M9.52502 6.5H2.43502C2.12502 6.5 1.89002 6.775 1.94002 7.08L2.36002 9.65C2.50002 10.51 2.87502 11.5 4.54002 11.5H7.34502C9.03002 11.5 9.33002 10.655 9.51002 9.71L10.015 7.095C10.075 6.785 9.84002 6.5 9.52502 6.5ZM5.30502 9.725C5.30502 9.92 5.15002 10.075 4.96002 10.075C4.76502 10.075 4.61002 9.92 4.61002 9.725V8.075C4.61002 7.885 4.76502 7.725 4.96002 7.725C5.15002 7.725 5.30502 7.885 5.30502 8.075V9.725ZM7.44502 9.725C7.44502 9.92 7.29002 10.075 7.09502 10.075C6.90502 10.075 6.74502 9.92 6.74502 9.725V8.075C6.74502 7.885 6.90502 7.725 7.09502 7.725C7.29002 7.725 7.44502 7.885 7.44502 8.075V9.725Z"
-                                    fill="#000000"
-                                />
-                            </svg>
+                            {categoryIcons['Еда']}
                             Еда
                         </S.CategoryButton>
-                        <S.CategoryButton
-                            onClick={() => setNewCategory('Транспорт')}
-                        >
-                            <svg
-                                width="14"
-                                height="15"
-                                viewBox="0 0 14 15"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M12.6875 5.16671C12.6875 5.40588 12.4892 5.60421 12.25 5.60421H1.75C1.51083 5.60421 1.3125 5.40588 1.3125 5.16671C1.3125 4.92755 1.51083 4.72921 1.75 4.72921H2.345L2.56667 3.67338C2.77667 2.65255 3.21417 1.71338 4.9525 1.71338H9.0475C10.7858 1.71338 11.2233 2.65255 11.4333 3.67338L11.655 4.72921H12.25C12.4892 4.72921 12.6875 4.92755 12.6875 5.16671Z"
-                                    fill="black"
-                                />
-                                <path
-                                    d="M12.9383 8.46817C12.8508 7.50567 12.5941 6.479 10.7216 6.479H3.27828C1.40578 6.479 1.15495 7.50567 1.06162 8.46817L0.734948 12.0207C0.694115 12.464 0.839948 12.9073 1.14328 13.2398C1.45245 13.5782 1.88995 13.7707 2.35661 13.7707H3.45328C4.39828 13.7707 4.57911 13.2282 4.69578 12.8723L4.81245 12.5223C4.94661 12.1198 4.98161 12.0207 5.50661 12.0207H8.49328C9.01828 12.0207 9.03578 12.079 9.18745 12.5223L9.30411 12.8723C9.42078 13.2282 9.60161 13.7707 10.5466 13.7707H11.6433C12.1041 13.7707 12.5474 13.5782 12.8566 13.2398C13.1599 12.9073 13.3058 12.464 13.2649 12.0207L12.9383 8.46817ZM5.24995 9.68734H3.49995C3.26078 9.68734 3.06245 9.489 3.06245 9.24984C3.06245 9.01067 3.26078 8.81234 3.49995 8.81234H5.24995C5.48911 8.81234 5.68745 9.01067 5.68745 9.24984C5.68745 9.489 5.48911 9.68734 5.24995 9.68734ZM10.4999 9.68734H8.74995C8.51078 9.68734 8.31245 9.489 8.31245 9.24984C8.31245 9.01067 8.51078 8.81234 8.74995 8.81234H10.4999C10.7391 8.81234 10.9374 9.01067 10.9374 9.24984C10.9374 9.489 10.7391 9.68734 10.4999 9.68734Z"
-                                    fill="black"
-                                />
-                            </svg>
+                        <S.CategoryButton onClick={() => setNewCategory('Транспорт')}>
+                            <img src="/car (1).svg" alt="Transport icon" style={{ width: '14px', height: '14px' }} />
                             Транспорт
                         </S.CategoryButton>
-                        <S.CategoryButton
-                            onClick={() => setNewCategory('Жилье')}
-                        >
-                            <svg
-                                width="14"
-                                height="15"
-                                viewBox="0 0 14 15"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M12.8334 12.8958H12.25V6.32167C12.25 5.96 12.0867 5.62167 11.8009 5.4L11.0834 4.84L11.0717 3.41084C11.0717 3.09 10.8092 2.83334 10.4884 2.83334H8.49919L7.71752 2.22667C7.29752 1.89417 6.70252 1.89417 6.28252 2.22667L2.19919 5.4C1.91335 5.62167 1.75002 5.96 1.75002 6.31584L1.72085 12.8958H1.16669C0.92752 12.8958 0.729187 13.0942 0.729187 13.3333C0.729187 13.5725 0.92752 13.7708 1.16669 13.7708H12.8334C13.0725 13.7708 13.2709 13.5725 13.2709 13.3333C13.2709 13.0942 13.0725 12.8958 12.8334 12.8958ZM3.79169 7.9375V7.0625C3.79169 6.74167 4.05419 6.47917 4.37502 6.47917H5.54169C5.86252 6.47917 6.12502 6.74167 6.12502 7.0625V7.9375C6.12502 8.25834 5.86252 8.52084 5.54169 8.52084H4.37502C4.05419 8.52084 3.79169 8.25834 3.79169 7.9375ZM8.45835 12.8958H5.54169V11.2917C5.54169 10.8075 5.93252 10.4167 6.41669 10.4167H7.58335C8.06752 10.4167 8.45835 10.8075 8.45835 11.2917V12.8958ZM10.2084 7.9375C10.2084 8.25834 9.94585 8.52084 9.62502 8.52084H8.45835C8.13752 8.52084 7.87502 8.25834 7.87502 7.9375V7.0625C7.87502 6.74167 8.13752 6.47917 8.45835 6.47917H9.62502C9.94585 6.47917 10.2084 6.74167 10.2084 7.0625V7.9375Z"
-                                    fill="black"
-                                />
-                            </svg>
-                            Жилье
+                        <S.CategoryButton onClick={() => setNewCategory('Жильё')}>
+                            <img src="/HouseIcon.svg" alt="Housing icon" style={{ width: '14px', height: '14px' }} />
+                            Жильё
                         </S.CategoryButton>
-                        <S.CategoryButton
-                            onClick={() => setNewCategory('Развлечения')}
-                        >
-                            <svg
-                                width="12"
-                                height="13"
-                                viewBox="0 0 12 13"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M8.91667 0.666504H3.08333C1.8 0.666504 0.75 1.7165 0.75 2.99984V9.99984C0.75 11.2832 1.8 12.3332 3.08333 12.3332H8.91667C10.2 12.3332 11.25 11.2832 11.25 9.99984V2.99984C11.25 1.7165 10.2 0.666504 8.91667 0.666504ZM5.335 10.0815C5.2475 10.169 5.13667 10.2098 5.02583 10.2098C4.915 10.2098 4.80417 10.169 4.71667 10.0815L4.3375 9.70234L3.97583 10.064C3.88833 10.1515 3.7775 10.1923 3.66667 10.1923C3.55583 10.1923 3.445 10.1515 3.3575 10.064C3.18833 9.89484 3.18833 9.61484 3.3575 9.44567L3.71917 9.084L3.375 8.73984C3.20583 8.57067 3.20583 8.29067 3.375 8.1215C3.54417 7.95234 3.82417 7.95234 3.99333 8.1215L4.3375 8.46567L4.69917 8.104C4.86833 7.93484 5.14833 7.93484 5.3175 8.104C5.48667 8.27317 5.48667 8.55317 5.3175 8.72234L4.95583 9.084L5.335 9.46317C5.50417 9.63234 5.50417 9.91234 5.335 10.0815ZM7.4525 10.2857C7.13167 10.2857 6.86917 10.029 6.86917 9.70817V9.6965C6.86917 9.37567 7.13167 9.11317 7.4525 9.11317C7.77333 9.11317 8.03583 9.37567 8.03583 9.6965C8.03583 10.0173 7.77333 10.2857 7.4525 10.2857ZM8.63083 9.02567C8.31 9.02567 8.04167 8.76317 8.04167 8.44234C8.04167 8.1215 8.29833 7.859 8.61917 7.859H8.63083C8.95167 7.859 9.21417 8.1215 9.21417 8.44234C9.21417 8.76317 8.95167 9.02567 8.63083 9.02567ZM9.5 4.89567C9.5 5.45567 9.03917 5.9165 8.47917 5.9165H3.52083C2.96083 5.9165 2.5 5.45567 2.5 4.89567V3.43734C2.5 2.87734 2.96083 2.4165 3.52083 2.4165H8.47917C9.03917 2.4165 9.5 2.87734 9.5 3.43734V4.89567Z"
-                                    fill="black"
-                                />
-                            </svg>
+                        <S.CategoryButton onClick={() => setNewCategory('Развлечения')}>
+                            <img src="/PlayIcon.svg" alt="Entertainment icon" style={{ width: '14px', height: '14px' }} />
                             Развлечения
                         </S.CategoryButton>
-                        <S.CategoryButton
-                            onClick={() => setNewCategory('Образование')}
-                        >
-                            <svg
-                                width="14"
-                                height="15"
-                                viewBox="0 0 14 15"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M9.81755 9.62342C10.2084 9.36676 10.7217 9.64676 10.7217 10.1134V10.8659C10.7217 11.6068 10.1442 12.4001 9.45005 12.6334L7.58922 13.2518C7.26255 13.3626 6.73171 13.3626 6.41088 13.2518L4.55005 12.6334C3.85005 12.4001 3.27838 11.6068 3.27838 10.8659V10.1076C3.27838 9.64676 3.79171 9.36676 4.17671 9.61759L5.37838 10.3993C5.83922 10.7084 6.42255 10.8601 7.00588 10.8601C7.58922 10.8601 8.17255 10.7084 8.63338 10.3993L9.81755 9.62342Z"
-                                    fill="black"
-                                />
-                                <path
-                                    d="M11.655 4.26841L8.16084 1.97591C7.53084 1.56174 6.49251 1.56174 5.86251 1.97591L2.35084 4.26841C1.22501 4.99757 1.22501 6.64841 2.35084 7.38341L3.28418 7.99007L5.86251 9.67007C6.49251 10.0842 7.53084 10.0842 8.16084 9.67007L10.7217 7.99007L11.5208 7.46507V9.25007C11.5208 9.48924 11.7192 9.68757 11.9583 9.68757C12.1975 9.68757 12.3958 9.48924 12.3958 9.25007V6.38007C12.6292 5.62757 12.39 4.75257 11.655 4.26841Z"
-                                    fill="black"
-                                />
-                            </svg>
+                        <S.CategoryButton onClick={() => setNewCategory('Образование')}>
+                            <img src="/StudyIcon.svg" alt="Education icon" style={{ width: '14px', height: '14px' }} />
                             Образование
                         </S.CategoryButton>
-                        <S.CategoryButton
-                            onClick={() => setNewCategory('Другое')}
-                        >
-                            <svg
-                                width="12"
-                                height="13"
-                                viewBox="0 0 12 13"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M8.33332 0.666504H3.66666C1.33332 0.666504 0.166656 1.83317 0.166656 4.1665V11.7498C0.166656 12.0707 0.429157 12.3332 0.74999 12.3332H8.33332C10.6667 12.3332 11.8333 11.1665 11.8333 8.83317V4.1665C11.8333 1.83317 10.6667 0.666504 8.33332 0.666504ZM7.16666 8.39567H3.08332C2.84416 8.39567 2.64582 8.19734 2.64582 7.95817C2.64582 7.719 2.84416 7.52067 3.08332 7.52067H7.16666C7.40582 7.52067 7.60416 7.719 7.60416 7.95817C7.60416 8.19734 7.40582 8.39567 7.16666 8.39567ZM8.91666 5.479H3.08332C2.84416 5.479 2.64582 5.28067 2.64582 5.0415C2.64582 4.80234 2.84416 4.604 3.08332 4.604H8.91666C9.15582 4.604 9.35416 4.80234 9.35416 5.0415C9.35416 5.28067 9.15582 5.479 8.91666 5.479Z"
-                                    fill="black"
-                                />
-                            </svg>
+                        <S.CategoryButton onClick={() => setNewCategory('Другое')}>
+                            <img src="/OtherIcon.svg" alt="Other icon" style={{ width: '14px', height: '14px' }} />
                             Другое
                         </S.CategoryButton>
                     </S.CategoryButtonsContainer>
@@ -300,7 +329,7 @@ function MainPage() {
                 </S.NewExpenseContainer>
             </S.ContentContainer>
         </S.MainBlock>
-    )
+    );
 }
 
-export default MainPage
+export default MainPage;
