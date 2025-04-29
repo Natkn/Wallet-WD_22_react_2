@@ -11,7 +11,7 @@ import {
     addMonths,
     subMonths,
 } from 'date-fns'
-import { ru } from 'date-fns/locale'
+import { ru } from 'date-fns/locale/ru';
 
 function Analysispage() {
     const [currentDate, setCurrentDate] = useState(new Date())
