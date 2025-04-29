@@ -33,6 +33,18 @@ function MainPage() {
     const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
     const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
 
+    const [errors, setErrors] = useState({
+        description: false,
+        category: false,
+        date: false,
+        amount: false,
+    });
+
+    // Состояния для немедленной валидации при вводе
+    const [descriptionError, setDescriptionError] = useState(false);
+    const [dateError, setDateError] = useState(false);
+    const [amountError, setAmountError] = useState(false);
+
     const categories = ['Еда', 'Транспорт', 'Жильё', 'Развлечения', 'Образование', 'Другое'];
     const sortOptions = ['Дата', 'Сумма'];
 
@@ -62,12 +74,111 @@ function MainPage() {
         Другое: '/OtherIcon.svg',
     };
 
+    // Обработка изменения описания
+    const handleDescriptionChange = (e) => {
+        const value = e.target.value;
+        setNewDescription(value);
+        setDescriptionError(value.length === 0);
+    };
+
+    // Функция для форматирования и валидации даты
+    const handleDateChange = (e) => {
+        let value = e.target.value;
+
+        // Удаляем всё, кроме цифр и точек
+        value = value.replace(/[^0-9.]/g, '');
+
+        // Автоматическое добавление точек
+        if (value.length === 2 || value.length === 5) {
+            if (!value.endsWith('.')) {
+                value += '.';
+            }
+        }
+
+        // Ограничиваем длину ввода (дд.мм.гггг = 10 символов)
+        if (value.length > 10) {
+            value = value.slice(0, 10);
+        }
+
+        setNewDate(value);
+
+        // Проверяем валидность даты сразу
+        if (value.length === 10) {
+            setDateError(!isValidDateFormat(value));
+        } else {
+            setDateError(value.length > 0); // Если поле не пустое, но дата не полная, показываем ошибку
+        }
+    };
+
+    const isValidDateFormat = (date) => {
+        const dateRegex = /^\d{2}\.\d{2}\.\d{4}$/;
+        if (!dateRegex.test(date)) return false;
+
+        const [day, month, year] = date.split('.').map(Number);
+        const isValidDay = day >= 1 && day <= 31;
+        const isValidMonth = month >= 1 && month <= 12;
+        const isValidYear = year >= 1900 && year <= 2100;
+
+        const isRealDate = () => {
+            const parsedDate = new Date(year, month - 1, day);
+            return (
+                parsedDate.getDate() === day &&
+                parsedDate.getMonth() + 1 === month &&
+                parsedDate.getFullYear() === year
+            );
+        };
+
+        return isValidDay && isValidMonth && isValidYear && isRealDate();
+    };
+
+    // Проверка формата суммы
+    const isValidAmountFormat = (amount) => {
+        // Удаляем пробелы для проверки
+        const cleanedAmount = amount.replace(/\s/g, '');
+        // Проверяем, что это только цифры
+        const amountRegex = /^\d+$/;
+        return amountRegex.test(cleanedAmount);
+    };
+
+    // Обработка изменения суммы
+    const handleAmountChange = (e) => {
+        let value = e.target.value;
+
+        // Удаляем всё, кроме цифр и пробелов
+        value = value.replace(/[^0-9\s]/g, '');
+
+        // Форматируем с пробелами каждые 3 цифры
+        const cleanedValue = value.replace(/\s/g, '');
+        const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+        setNewAmount(formattedValue);
+
+        // Проверяем валидность суммы сразу
+        setAmountError(formattedValue.length > 0 && !isValidAmountFormat(formattedValue));
+    };
+
     const handleAddExpense = () => {
+        const newErrors = {
+            description: !newDescription,
+            category: !newCategory,
+            date: !newDate || !isValidDateFormat(newDate),
+            amount: !newAmount || !isValidAmountFormat(newAmount),
+        };
+
+        setErrors(newErrors);
+        setDescriptionError(newErrors.description);
+        setDateError(newErrors.date);
+        setAmountError(newErrors.amount);
+
+        if (newErrors.description || newErrors.category || newErrors.date || newErrors.amount) {
+            return;
+        }
+
         const newExpense = {
             description: newDescription,
             category: newCategory,
             date: newDate,
-            amount: newAmount,
+            amount: `${newAmount} ₽`,
         };
 
         setExpenses([...expenses, newExpense]);
@@ -76,6 +187,10 @@ function MainPage() {
         setNewCategory('');
         setNewDate('');
         setNewAmount('');
+        setErrors({ description: false, category: false, date: false, amount: false });
+        setDescriptionError(false);
+        setDateError(false);
+        setAmountError(false);
     };
 
     const toggleCategoryDropdown = () => {
@@ -270,60 +385,116 @@ function MainPage() {
                 <S.NewExpenseContainer>
                     <S.NewExpenseTitle>Новый расход</S.NewExpenseTitle>
 
-                    <S.InputLabel htmlFor="description">Описание:</S.InputLabel>
+                    <S.InputLabel htmlFor="description">
+                        Описание:{(errors.description || descriptionError)}
+                    </S.InputLabel>
                     <S.InputField
                         type="text"
                         id="description"
                         placeholder="Введите описание"
                         value={newDescription}
-                        onChange={(e) => setNewDescription(e.target.value)}
+                        onChange={handleDescriptionChange}
+                        style={{
+                            borderColor: descriptionError || errors.description ? 'red' : '#E0E0E0',
+                            backgroundColor: descriptionError || errors.description ? '#FFF5F5' : newDescription ? '#E7F6F2' : '#FFFFFF',
+                        }}
                     />
 
-                    <S.InputLabel>Категория:</S.InputLabel>
+                    <S.InputLabel>
+                        Категория:{errors.category && <span style={{ color: 'red' }}> *</span>}
+                    </S.InputLabel>
                     <S.CategoryButtonsContainer>
-                        <S.CategoryButton onClick={() => setNewCategory('Еда')}>
+                        <S.CategoryButton
+                            onClick={() => setNewCategory('Еда')}
+                            style={{
+                                backgroundColor: newCategory === 'Еда' ? '#E7F6F2' : 'transparent',
+                            }}
+                        >
                             {categoryIcons['Еда']}
                             Еда
                         </S.CategoryButton>
-                        <S.CategoryButton onClick={() => setNewCategory('Транспорт')}>
+                        <S.CategoryButton
+                            onClick={() => setNewCategory('Транспорт')}
+                            style={{
+                                backgroundColor: newCategory === 'Транспорт' ? '#E7F6F2' : 'transparent',
+                            }}
+                        >
                             <img src="/car (1).svg" alt="Transport icon" style={{ width: '14px', height: '14px' }} />
                             Транспорт
                         </S.CategoryButton>
-                        <S.CategoryButton onClick={() => setNewCategory('Жильё')}>
+                        <S.CategoryButton
+                            onClick={() => setNewCategory('Жильё')}
+                            style={{
+                                backgroundColor: newCategory === 'Жильё' ? '#E7F6F2' : 'transparent',
+                            }}
+                        >
                             <img src="/HouseIcon.svg" alt="Housing icon" style={{ width: '14px', height: '14px' }} />
                             Жильё
                         </S.CategoryButton>
-                        <S.CategoryButton onClick={() => setNewCategory('Развлечения')}>
+                        <S.CategoryButton
+                            onClick={() => setNewCategory('Развлечения')}
+                            style={{
+                                backgroundColor: newCategory === 'Развлечения' ? '#E7F6F2' : 'transparent',
+                            }}
+                        >
                             <img src="/PlayIcon.svg" alt="Entertainment icon" style={{ width: '14px', height: '14px' }} />
                             Развлечения
                         </S.CategoryButton>
-                        <S.CategoryButton onClick={() => setNewCategory('Образование')}>
+                        <S.CategoryButton
+                            onClick={() => setNewCategory('Образование')}
+                            style={{
+                                backgroundColor: newCategory === 'Образование' ? '#E7F6F2' : 'transparent',
+                            }}
+                        >
                             <img src="/StudyIcon.svg" alt="Education icon" style={{ width: '14px', height: '14px' }} />
                             Образование
                         </S.CategoryButton>
-                        <S.CategoryButton onClick={() => setNewCategory('Другое')}>
+                        <S.CategoryButton
+                            onClick={() => setNewCategory('Другое')}
+                            style={{
+                                backgroundColor: newCategory === 'Другое' ? '#E7F6F2' : 'transparent',
+                            }}
+                        >
                             <img src="/OtherIcon.svg" alt="Other icon" style={{ width: '14px', height: '14px' }} />
                             Другое
                         </S.CategoryButton>
                     </S.CategoryButtonsContainer>
 
-                    <S.InputLabel htmlFor="date">Дата:</S.InputLabel>
+                    <S.InputLabel htmlFor="date">
+                        Дата:{(errors.date || dateError) && <span style={{ color: 'red' }}> *</span>}
+                    </S.InputLabel>
                     <S.InputField
                         id="date"
-                        placeholder="Введите дату"
+                        placeholder="дд.мм.гггг"
                         value={newDate}
-                        onChange={(e) => setNewDate(e.target.value)}
+                        onChange={handleDateChange}
+                        style={{
+                            borderColor: dateError || errors.date ? 'red' : '#E0E0E0',
+                            backgroundColor: dateError || errors.date ? '#FFF5F5' : isValidDateFormat(newDate) ? '#E7F6F2' : '#FFFFFF',
+                        }}
                     />
 
-                    <S.InputLabel htmlFor="amount">Сумма:</S.InputLabel>
+                    <S.InputLabel htmlFor="amount">
+                        Сумма:{(errors.amount || amountError) && <span style={{ color: 'red' }}> *</span>}
+                    </S.InputLabel>
                     <S.InputField
                         id="amount"
                         placeholder="Введите сумму"
                         value={newAmount}
-                        onChange={(e) => setNewAmount(e.target.value)}
+                        onChange={handleAmountChange}
+                        style={{
+                            borderColor: amountError || errors.amount ? 'red' : '#E0E0E0',
+                            backgroundColor: amountError || errors.amount ? '#FFF5F5' : isValidAmountFormat(newAmount) ? '#E7F6F2' : '#FFFFFF',
+                        }}
                     />
 
-                    <S.AddExpenseButton onClick={handleAddExpense}>
+                    <S.AddExpenseButton
+                        onClick={handleAddExpense}
+                        style={{
+                            backgroundColor: '#00A575',
+                            cursor: 'pointer',
+                        }}
+                    >
                         Добавить новый расход
                     </S.AddExpenseButton>
                 </S.NewExpenseContainer>
