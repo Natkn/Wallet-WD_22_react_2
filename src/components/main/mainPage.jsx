@@ -40,10 +40,12 @@ function MainPage() {
         amount: false,
     });
 
-    // Состояния для немедленной валидации при вводе
     const [descriptionError, setDescriptionError] = useState(false);
     const [dateError, setDateError] = useState(false);
     const [amountError, setAmountError] = useState(false);
+
+    const [editMode, setEditMode] = useState(false);
+    const [editingExpenseIndex, setEditingExpenseIndex] = useState(null);
 
     const categories = ['Еда', 'Транспорт', 'Жильё', 'Развлечения', 'Образование', 'Другое'];
     const sortOptions = ['Дата', 'Сумма'];
@@ -74,39 +76,33 @@ function MainPage() {
         Другое: '/OtherIcon.svg',
     };
 
-    // Обработка изменения описания
     const handleDescriptionChange = (e) => {
         const value = e.target.value;
         setNewDescription(value);
         setDescriptionError(value.length === 0);
     };
 
-    // Функция для форматирования и валидации даты
     const handleDateChange = (e) => {
         let value = e.target.value;
 
-        // Удаляем всё, кроме цифр и точек
         value = value.replace(/[^0-9.]/g, '');
 
-        // Автоматическое добавление точек
         if (value.length === 2 || value.length === 5) {
             if (!value.endsWith('.')) {
                 value += '.';
             }
         }
 
-        // Ограничиваем длину ввода (дд.мм.гггг = 10 символов)
         if (value.length > 10) {
             value = value.slice(0, 10);
         }
 
         setNewDate(value);
 
-        // Проверяем валидность даты сразу
         if (value.length === 10) {
             setDateError(!isValidDateFormat(value));
         } else {
-            setDateError(value.length > 0); // Если поле не пустое, но дата не полная, показываем ошибку
+            setDateError(value.length > 0); 
         }
     };
 
@@ -131,30 +127,50 @@ function MainPage() {
         return isValidDay && isValidMonth && isValidYear && isRealDate();
     };
 
-    // Проверка формата суммы
     const isValidAmountFormat = (amount) => {
-        // Удаляем пробелы для проверки
         const cleanedAmount = amount.replace(/\s/g, '');
-        // Проверяем, что это только цифры
         const amountRegex = /^\d+$/;
         return amountRegex.test(cleanedAmount);
     };
 
-    // Обработка изменения суммы
     const handleAmountChange = (e) => {
         let value = e.target.value;
 
-        // Удаляем всё, кроме цифр и пробелов
         value = value.replace(/[^0-9\s]/g, '');
 
-        // Форматируем с пробелами каждые 3 цифры
         const cleanedValue = value.replace(/\s/g, '');
         const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
         setNewAmount(formattedValue);
 
-        // Проверяем валидность суммы сразу
         setAmountError(formattedValue.length > 0 && !isValidAmountFormat(formattedValue));
+    };
+
+    const handleEditExpense = (index) => {
+        const expense = expenses[index];
+        setNewDescription(expense.description);
+        setNewCategory(expense.category);
+        setNewDate(expense.date);
+        setNewAmount(expense.amount.replace(' ₽', ''));
+        setEditMode(true);
+        setEditingExpenseIndex(index);
+        setErrors({ description: false, category: false, date: false, amount: false });
+        setDescriptionError(false);
+        setDateError(false);
+        setAmountError(false);
+    };
+
+    const handleCancelEdit = () => {
+        setEditMode(false);
+        setEditingExpenseIndex(null);
+        setNewDescription('');
+        setNewCategory('');
+        setNewDate('');
+        setNewAmount('');
+        setErrors({ description: false, category: false, date: false, amount: false });
+        setDescriptionError(false);
+        setDateError(false);
+        setAmountError(false);
     };
 
     const handleAddExpense = () => {
@@ -174,14 +190,26 @@ function MainPage() {
             return;
         }
 
-        const newExpense = {
-            description: newDescription,
-            category: newCategory,
-            date: newDate,
-            amount: `${newAmount} ₽`,
-        };
-
-        setExpenses([...expenses, newExpense]);
+        if (editMode) {
+            const updatedExpenses = [...expenses];
+            updatedExpenses[editingExpenseIndex] = {
+                description: newDescription,
+                category: newCategory,
+                date: newDate,
+                amount: `${newAmount} ₽`,
+            };
+            setExpenses(updatedExpenses);
+            setEditMode(false);
+            setEditingExpenseIndex(null);
+        } else {
+            const newExpense = {
+                description: newDescription,
+                category: newCategory,
+                date: newDate,
+                amount: `${newAmount} ₽`,
+            };
+            setExpenses([...expenses, newExpense]);
+        }
 
         setNewDescription('');
         setNewCategory('');
@@ -234,7 +262,7 @@ function MainPage() {
             <S.H2>Мои расходы</S.H2>
             <S.ContentContainer>
                 <S.ExpensesTableContainer>
-                    <S.TableHeader>
+                <S.TableHeader>
                         <S.H3>Таблица расходов</S.H3>
                         <S.FiltersContainer style={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }}>
                             <S.FilterWrapper>
@@ -324,9 +352,10 @@ function MainPage() {
                                             style={{
                                                 border: 'none',
                                                 background: 'none',
-                                                padding: 0,
+                                                padding: '0 8px',
                                                 cursor: 'pointer',
                                             }}
+                                            onClick={() => handleEditExpense(index)}
                                         >
                                             <svg
                                                 width="12"
@@ -355,7 +384,7 @@ function MainPage() {
                                             style={{
                                                 border: 'none',
                                                 background: 'none',
-                                                padding: 0,
+                                                padding: '0 8px',
                                                 cursor: 'pointer',
                                             }}
                                         >
@@ -383,10 +412,10 @@ function MainPage() {
                     </S.Table>
                 </S.ExpensesTableContainer>
                 <S.NewExpenseContainer>
-                    <S.NewExpenseTitle>Новый расход</S.NewExpenseTitle>
+                    <S.NewExpenseTitle>{editMode ? 'Редактирование' : 'Новый расход'}</S.NewExpenseTitle>
 
                     <S.InputLabel htmlFor="description">
-                        Описание:{(errors.description || descriptionError)}
+                        Описание:{(errors.description || descriptionError) && <span style={{ color: 'red' }}> *</span>}
                     </S.InputLabel>
                     <S.InputField
                         type="text"
@@ -488,15 +517,18 @@ function MainPage() {
                         }}
                     />
 
-                    <S.AddExpenseButton
-                        onClick={handleAddExpense}
-                        style={{
-                            backgroundColor: '#00A575',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        Добавить новый расход
-                    </S.AddExpenseButton>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                        <S.AddExpenseButton
+                            onClick={handleAddExpense}
+                            style={{
+                                backgroundColor: '#00A575',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            {editMode ? 'Сохранить редактирование' : 'Добавить новый расход'}
+                        </S.AddExpenseButton>
+                        {editMode}
+                    </div>
                 </S.NewExpenseContainer>
             </S.ContentContainer>
         </S.MainBlock>

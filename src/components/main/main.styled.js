@@ -276,6 +276,9 @@ export const AddExpenseButton = styled.button`
     letter-spacing: 0px;
     text-align: center;
     vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
         background-color: #147049;
