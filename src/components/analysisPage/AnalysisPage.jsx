@@ -11,7 +11,8 @@ import {
     addMonths,
     subMonths,
 } from 'date-fns'
-import { ru } from 'date-fns/locale/ru';
+import { ru } from 'date-fns/locale/ru'
+import ChartComponent from '../analysisPage/Diagram'
 
 function Analysispage() {
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -100,9 +101,8 @@ function Analysispage() {
                             <div>Расходы за 10 июля 2024 — 4 августа 2024</div>
                         </S.FiltersContainer>
                     </S.TableHeader>
-                    <S.Table>
-                        <S.TableHead></S.TableHead>
-                    </S.Table>
+
+                    <ChartComponent />
                 </S.ExpensesTableContainer>
             </S.ContentContainer>
         </S.MainBlock>

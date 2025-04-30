@@ -1,7 +1,7 @@
-import Header from './components/header/Header';
-import AppRoutes from './AppRoutes';
-import { BrowserRouter } from 'react-router-dom';
-import { GlobalStyles } from './assests/GlobalStyles';
+import Header from './components/header/Header'
+import AppRoutes from './AppRoutes'
+import { BrowserRouter } from 'react-router-dom'
+import { GlobalStyles } from './assests/GlobalStyles'
 
 function App() {
     return (
@@ -10,7 +10,7 @@ function App() {
             <Header />
             <AppRoutes />
         </BrowserRouter>
-    );
+    )
 }
 
-export default App;
+export default App

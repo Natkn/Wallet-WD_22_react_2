@@ -188,7 +188,7 @@ export const Day = styled.div`
     }
 
     &.today {
-        background-color: #4caf50;
+        background-color: #9cea9fa6;
     }
 `
 
