@@ -5,7 +5,9 @@ import {
     HeaderContainer,
     HeaderButtons,
     HeaderButton,
-    HeaderButtonOut,
+    HeaderRight,
+    HeaderCenter,
+    HeaderLeft,
 } from './Header.styled'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -16,18 +18,24 @@ function Header() {
     return (
         <HeaderContainer>
             <HeaderBlock>
-                <HeaderLogo logo={logo} />
+                <HeaderLeft>
+                    <HeaderLogo logo={logo} />
+                </HeaderLeft>
                 {showButtons && (
                     <HeaderButtons>
-                        <Link to="/my-expenses">
-                            <HeaderButton>Мои расходы</HeaderButton>
-                        </Link>
-                        <Link to="/expense-analysis">
-                            <HeaderButton>Анализ расходов</HeaderButton>
-                        </Link>
-                        <Link to="/log-out">
-                            <HeaderButtonOut>Выйти</HeaderButtonOut>
-                        </Link>
+                        <HeaderCenter>
+                            <Link to="/my-expenses">
+                                <HeaderButton>Мои расходы</HeaderButton>
+                            </Link>
+                            <Link to="/expense-analysis">
+                                <HeaderButton>Анализ расходов</HeaderButton>
+                            </Link>
+                        </HeaderCenter>
+                        <HeaderRight>
+                            <Link to="/log-out">
+                                <HeaderButton>Выйти</HeaderButton>
+                            </Link>
+                        </HeaderRight>
                     </HeaderButtons>
                 )}
             </HeaderBlock>

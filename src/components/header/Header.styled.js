@@ -9,23 +9,35 @@ export const HeaderContainer = styled.header`
 
 export const HeaderBlock = styled.div`
     height: 70px;
-    width: 64px;
-    left: 110px;
+    width: 100%;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     position: relative;
-    padding: 0 10px;
-    max-width: 1260px;
-    flex-direction: column;
-    align-content: space-between;
-    gap: 21vw;
+    max-width: 1160px;
+    margin: 0 auto;
+    box-sizing: border-box;
+
+    & > * {
+        flex: 0 0 auto;
+    }
 `
 export const HeaderButtons = styled.div`
     display: flex;
+`
+export const HeaderLeft = styled.div`
+    display: flex;
+`
+
+export const HeaderCenter = styled.div`
+    display: flex;
     align-items: center;
     gap: 36px;
+    margin-right: 16vw;
+`
+
+export const HeaderRight = styled.div`
+    display: flex;
 `
 
 export const HeaderButton = styled.button`
@@ -45,11 +57,11 @@ export const HeaderButton = styled.button`
 
     &:hover {
         color: #1fa46c;
+        border-bottom: 1px solid #1fa46c;
     }
 `
 
 export const HeaderButtonOut = styled.button`
-    width: 110px;
     margin-left: auto;
     background-color: transparent;
     border: none;
@@ -57,7 +69,6 @@ export const HeaderButtonOut = styled.button`
     text-decoration: none;
     display: inline-block;
     cursor: pointer;
-    margin-left: 24vw;
 
     &:hover {
         color: #1fa46c;

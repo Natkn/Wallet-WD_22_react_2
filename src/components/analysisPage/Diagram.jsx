@@ -72,8 +72,9 @@ const ChartComponent = () => {
                 font: {
                     weight: 600,
                     size: 16,
+                    family: 'Montserrat',
                 },
-                formatter: (value) => value + ' P',
+                formatter: (value) => value + ' ₽',
                 anchor: 'end',
                 align: 'top',
             },
