@@ -8,6 +8,7 @@ import {
     HeaderRight,
     HeaderCenter,
     HeaderLeft,
+    LogoutButton,
 } from './Header.styled'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -33,7 +34,7 @@ function Header() {
                         </HeaderCenter>
                         <HeaderRight>
                             <Link to="/log-out">
-                                <HeaderButton>Выйти</HeaderButton>
+                                <LogoutButton>Выйти</LogoutButton>
                             </Link>
                         </HeaderRight>
                     </HeaderButtons>

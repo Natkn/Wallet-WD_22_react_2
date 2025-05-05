@@ -29,15 +29,15 @@ export const HeaderLeft = styled.div`
     display: flex;
 `
 
+export const HeaderRight = styled.div`
+    display: flex;
+`
+
 export const HeaderCenter = styled.div`
     display: flex;
     align-items: center;
     gap: 36px;
     margin-right: 16vw;
-`
-
-export const HeaderRight = styled.div`
-    display: flex;
 `
 
 export const HeaderButton = styled.button`
@@ -60,17 +60,15 @@ export const HeaderButton = styled.button`
         border-bottom: 1px solid #1fa46c;
     }
 `
-
-export const HeaderButtonOut = styled.button`
-    margin-left: auto;
-    background-color: transparent;
-    border: none;
-    color: black;
-    text-decoration: none;
-    display: inline-block;
-    cursor: pointer;
+export const LogoutButton = styled(HeaderButton)`
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 170%;
+    letter-spacing: 0px;
+    text-align: center;
 
     &:hover {
         color: #1fa46c;
+        border-bottom: none;
     }
 `
