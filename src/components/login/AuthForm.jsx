@@ -122,7 +122,7 @@ function AuthForm() {
                 user: response
             }));
 
-            navigate('/main');
+            navigate('/my-expenses');
         } catch (error) {
             setFormError(error.message);
         }
