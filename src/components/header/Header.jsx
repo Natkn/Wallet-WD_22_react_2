@@ -10,6 +10,7 @@ import {
     HeaderLeft,
     LogoutButton,
 } from './Header.styled'
+import { cleanUserData } from '../../services/auth'
 import { Link, useLocation } from 'react-router-dom'
 
 function Header() {
@@ -34,7 +35,7 @@ function Header() {
                         </HeaderCenter>
                         <HeaderRight>
                             <Link to="/log-out">
-                                <LogoutButton>Выйти</LogoutButton>
+                                <LogoutButton onClick={cleanUserData}>Выйти</LogoutButton>
                             </Link>
                         </HeaderRight>
                     </HeaderButtons>
