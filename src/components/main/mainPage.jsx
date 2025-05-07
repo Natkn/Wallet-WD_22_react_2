@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { filterExpenses, sortExpenses } from '../../utils/expenseUtils';
+// import { filterExpenses, sortExpenses } from '../../utils/expenseUtils';
 import FoodIcon from '../icons/FoodIcon';
 import { useExpenses } from '../../ExpenseContext';
 import MainLayout from './MainLayout';
@@ -7,9 +7,11 @@ import { useExpenseForm } from '../../hooks/useExpenseForm';
 import * as S from './main.styled';
 
 function MainPage() {
-  const { expenses, setExpenses } = useExpenses();
-  const [selectedCategory] = useState('');
-  const [sortOrder] = useState('Дата');
+  const { expenses = [], setExpenses } = useExpenses() || {}; // Дефолтное значение для expenses
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [sortOrder, setSortOrder] = useState('Дата');
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
 
   const {
     newDescription,
@@ -42,9 +44,51 @@ function MainPage() {
     Образование: <S.CategoryIcon src="/StudyIcon.svg" alt="Education icon" />,
     Другое: <S.CategoryIcon src="/OtherIcon.svg" alt="Other icon" />,
   };
+  const sortOptions = ['Дата', 'Сумма'];
+
+  const toggleCategoryDropdown = () => {
+    setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+    setIsSortDropdownOpen(false);
+  };
+
+  const toggleSortDropdown = () => {
+    setIsSortDropdownOpen(!isSortDropdownOpen);
+    setIsCategoryDropdownOpen(false);
+  };
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setIsCategoryDropdownOpen(false);
+  };
+
+  const handleSortSelect = (order) => {
+    setSortOrder(order);
+    setIsSortDropdownOpen(false);
+  };
 
   const filteredExpenses = filterExpenses(expenses, selectedCategory);
   const sortedExpenses = sortExpenses(filteredExpenses, sortOrder);
+
+  // Define filterExpenses and sortExpenses directly to avoid import errors
+  function filterExpenses(expenses, selectedCategory) {
+    return selectedCategory
+      ? (expenses || []).filter((expense) => expense?.category === selectedCategory)
+      : expenses || [];
+  }
+
+  function sortExpenses(expenses, sortOrder) {
+    return [...(expenses || [])].sort((a, b) => {
+      if (sortOrder === 'Дата') {
+        const dateA = a?.date ? new Date(a.date.split('.').reverse().join('-')) : new Date();
+        const dateB = b?.date ? new Date(b.date.split('.').reverse().join('-')) : new Date();
+        return dateB - dateA;
+      } else {
+        const amountA = a?.amount ? parseFloat(a.amount.replace(' ₽', '').replace(' ', '')) : 0;
+        const amountB = b?.amount ? parseFloat(b.amount.replace(' ₽', '').replace(' ', '')) : 0;
+        return amountB - amountA;
+      }
+    });
+  }
 
   return (
     <MainLayout
@@ -70,6 +114,15 @@ function MainPage() {
       setNewCategory={setNewCategory}
       setNewDate={setNewDate}
       setNewAmount={setNewAmount}
+      selectedCategory={selectedCategory}
+      sortOrder={sortOrder}
+      isCategoryDropdownOpen={isCategoryDropdownOpen}
+      isSortDropdownOpen={isSortDropdownOpen}
+      toggleCategoryDropdown={toggleCategoryDropdown}
+      toggleSortDropdown={toggleSortDropdown}
+      handleCategorySelect={handleCategorySelect}
+      handleSortSelect={handleSortSelect}
+      sortOptions={sortOptions}
     />
   );
 }
