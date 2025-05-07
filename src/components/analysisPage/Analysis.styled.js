@@ -20,6 +20,7 @@ export const H2 = styled.h2`
     line-height: 150%;
     letter-spacing: 0px;
     margin-bottom: 32px;
+    padding-top: 20px;
 `
 
 export const MainPageContainer = styled.div`
@@ -195,7 +196,7 @@ export const Day = styled.div`
 export const ExpensesTableContainer = styled.div`
     width: 789px;
     height: 540px;
-    top: 80px;
+    top: 100px;
     border-radius: 30px;
     background-color: #fff;
     position: relative;

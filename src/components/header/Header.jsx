@@ -16,6 +16,8 @@ import { Link, useLocation } from 'react-router-dom'
 function Header() {
     const location = useLocation()
     const showButtons = location.pathname !== '/'
+    const isMyExpensesActive = location.pathname === '/my-expenses'
+    const isExpenseAnalysisActive = location.pathname === '/expense-analysis'
 
     return (
         <HeaderContainer>
@@ -27,15 +29,21 @@ function Header() {
                     <HeaderButtons>
                         <HeaderCenter>
                             <Link to="/my-expenses">
-                                <HeaderButton>Мои расходы</HeaderButton>
+                                <HeaderButton $active={isMyExpensesActive}>
+                                    Мои расходы
+                                </HeaderButton>
                             </Link>
                             <Link to="/expense-analysis">
-                                <HeaderButton>Анализ расходов</HeaderButton>
+                                <HeaderButton $active={isExpenseAnalysisActive}>
+                                    Анализ расходов
+                                </HeaderButton>
                             </Link>
                         </HeaderCenter>
                         <HeaderRight>
                             <Link to="/log-out">
-                                <LogoutButton onClick={cleanUserData}>Выйти</LogoutButton>
+                                <LogoutButton onClick={cleanUserData}>
+                                    Выйти
+                                </LogoutButton>
                             </Link>
                         </HeaderRight>
                     </HeaderButtons>
