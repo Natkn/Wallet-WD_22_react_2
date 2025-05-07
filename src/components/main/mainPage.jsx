@@ -4,6 +4,7 @@ import FoodIcon from '../icons/FoodIcon';
 import { useExpenses } from '../../ExpenseContext';
 import MainLayout from './MainLayout';
 import { useExpenseForm } from '../../hooks/useExpenseForm';
+import * as S from './main.styled';
 
 function MainPage() {
   const { expenses, setExpenses } = useExpenses();
@@ -35,11 +36,11 @@ function MainPage() {
   const categories = ['Еда', 'Транспорт', 'Жильё', 'Развлечения', 'Образование', 'Другое'];
   const categoryIcons = {
     Еда: <FoodIcon />,
-    Транспорт: <img src="/car (1).svg" alt="Transport icon" style={{ width: '14px', height: '14px' }} />,
-    Жильё: <img src="/HouseIcon.svg" alt="Housing icon" style={{ width: '14px', height: '14px' }} />,
-    Развлечения: <img src="/PlayIcon.svg" alt="Entertainment icon" style={{ width: '14px', height: '14px' }} />,
-    Образование: <img src="/StudyIcon.svg" alt="Education icon" style={{ width: '14px', height: '14px' }} />,
-    Другое: <img src="/OtherIcon.svg" alt="Other icon" style={{ width: '14px', height: '14px' }} />,
+    Транспорт: <S.CategoryIcon src="/car (1).svg" alt="Transport icon" />,
+    Жильё: <S.CategoryIcon src="/HouseIcon.svg" alt="Housing icon" />,
+    Развлечения: <S.CategoryIcon src="/PlayIcon.svg" alt="Entertainment icon" />,
+    Образование: <S.CategoryIcon src="/StudyIcon.svg" alt="Education icon" />,
+    Другое: <S.CategoryIcon src="/OtherIcon.svg" alt="Other icon" />,
   };
 
   const filteredExpenses = filterExpenses(expenses, selectedCategory);

@@ -204,6 +204,18 @@ export const TableCell = styled.td`
     }
 `
 
+export const EditButton = styled.button`
+    border: none;
+    background: none;
+    padding: 0 8px;
+    cursor: pointer;
+`
+
+export const EditIcon = styled.img`
+    width: 12px;
+    height: 12px;
+`
+
 export const NewExpenseTitle = styled.h2`
     margin-bottom: 26px;
     font-weight: 600;
@@ -218,6 +230,10 @@ export const InputLabel = styled.label`
     font-size: 16px;
     line-height: 100%;
     letter-spacing: 0px;
+`
+
+export const ErrorStar = styled.span`
+    color: red;
 `
 
 export const InputField = styled.input`
@@ -248,10 +264,7 @@ export const CategoryButtonsContainer = styled.div`
 export const CategoryButton = styled.button`
     border: none;
     border-radius: 30px;
-    padding-top: 8px;
-    padding-right: 20px;
-    padding-bottom: 8px;
-    padding-left: 20px;
+    padding: 8px 20px;
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -285,6 +298,11 @@ export const CategoryButton = styled.button`
                 saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%);
         }
     }
+`
+
+export const CategoryIcon = styled.img`
+    width: 14px;
+    height: 14px;
 `
 
 export const AddExpenseButton = styled.button`

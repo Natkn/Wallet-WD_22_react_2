@@ -22,7 +22,7 @@ const ExpenseForm = ({
   <S.NewExpenseContainer>
     <S.NewExpenseTitle>{editMode ? 'Редактирование' : 'Новый расход'}</S.NewExpenseTitle>
     <S.InputLabel htmlFor="description">
-      {(errors.description || descriptionError) && <span style={{ color: 'red' }}> *</span>} Описание:
+      {(errors.description || descriptionError) && <S.ErrorStar>*</S.ErrorStar>} Описание:
     </S.InputLabel>
     <S.InputField
       type="text"
@@ -31,7 +31,7 @@ const ExpenseForm = ({
       value={newDescription}
       onChange={handleDescriptionChange}
     />
-    <S.InputLabel>{errors.category && <span style={{ color: 'red' }}> *</span>} Категория:</S.InputLabel>
+    <S.InputLabel>{errors.category && <S.ErrorStar>*</S.ErrorStar>} Категория:</S.InputLabel>
     <S.CategoryButtonsContainer>
       {categories.map((category) => (
         <S.CategoryButton
@@ -44,14 +44,14 @@ const ExpenseForm = ({
         </S.CategoryButton>
       ))}
     </S.CategoryButtonsContainer>
-    <S.InputLabel htmlFor="date">{(errors.date || dateError) && <span style={{ color: 'red' }}> *</span>} Дата:</S.InputLabel>
+    <S.InputLabel htmlFor="date">{(errors.date || dateError) && <S.ErrorStar>*</S.ErrorStar>} Дата:</S.InputLabel>
     <S.InputField
       id="date"
       placeholder="дд.мм.гггг"
       value={newDate}
       onChange={handleDateChange}
     />
-    <S.InputLabel htmlFor="amount">{(errors.amount || amountError) && <span style={{ color: 'red' }}> *</span>} Сумма:</S.InputLabel>
+    <S.InputLabel htmlFor="amount">{(errors.amount || amountError) && <S.ErrorStar>*</S.ErrorStar>} Сумма:</S.InputLabel>
     <S.InputField
       id="amount"
       placeholder="Введите сумму"
@@ -66,13 +66,10 @@ const ExpenseForm = ({
 
 ExpenseForm.propTypes = {
   newDescription: PropTypes.string.isRequired,
-  setNewDescription: PropTypes.func.isRequired,
-  newCategory: PropTypes.string.isRequired,
   setNewCategory: PropTypes.func.isRequired,
+  newCategory: PropTypes.string.isRequired,
   newDate: PropTypes.string.isRequired,
-  setNewDate: PropTypes.func.isRequired,
   newAmount: PropTypes.string.isRequired,
-  setNewAmount: PropTypes.func.isRequired,
   handleAddExpense: PropTypes.func.isRequired,
   editMode: PropTypes.bool.isRequired,
   categories: PropTypes.arrayOf(PropTypes.string).isRequired,

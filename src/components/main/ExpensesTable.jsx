@@ -26,16 +26,12 @@ const ExpensesTable = ({ expenses, onEdit, editMode, editingExpenseIndex }) => (
             <S.TableCell>{expense.date}</S.TableCell>
             <S.TableCell>{expense.amount}</S.TableCell>
             <S.TableCell>
-              <button
-                style={{ border: 'none', background: 'none', padding: '0 8px', cursor: 'pointer' }}
-                onClick={() => onEdit(index)}
-              >
-                <img
+              <S.EditButton onClick={() => onEdit(index)}>
+                <S.EditIcon
                   src={editMode && editingExpenseIndex === index ? 'EditBtnGreen.svg' : 'EditBtn.svg'}
                   alt="Edit icon"
-                  style={{ width: '12px', height: '12px' }}
                 />
-              </button>
+              </S.EditButton>
             </S.TableCell>
           </S.TableRow>
         ))}
