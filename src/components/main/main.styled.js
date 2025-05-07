@@ -129,7 +129,7 @@ export const DropdownItem = styled.div`
         img,
         svg {
             filter: brightness(0) saturate(100%) invert(39%) sepia(70%)
-                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%); // Преобразование цвета изображения при наведении
+                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%);
         }
     }
 `
@@ -271,7 +271,7 @@ export const CategoryButton = styled.button`
         img,
         svg {
             filter: brightness(0) saturate(100%) invert(39%) sepia(70%)
-                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%); // Преобразование цвета изображения при наведении
+                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%);
         }
     }
 
@@ -282,7 +282,7 @@ export const CategoryButton = styled.button`
         img,
         svg {
             filter: brightness(0) saturate(100%) invert(39%) sepia(70%)
-                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%); // Преобразование цвета изображения при наведении
+                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%);
         }
     }
 `
