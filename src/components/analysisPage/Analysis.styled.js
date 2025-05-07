@@ -44,6 +44,28 @@ export const NewExpenseContainer = styled.div`
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-right: 32px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding-right: 16px;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        border-radius: 400px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 1px;
+    }
+
+    &::-webkit-scrollbar-track {
+        scroll-padding-top: 100px;
+        background-color: transparent;
+        margin-top: 100px;
+        padding-top: 100px;
+    }
+
+    scrollbar-width: thin;
+    scrollbar-color: #d9d9d9 transparent;
 `
 
 export const NewExpenseTitle = styled.h2`
@@ -69,7 +91,9 @@ export const PeriodElement = styled.div`
     text-align: center;
     vertical-align: middle;
     height: 18px;
-
+    border-bottom: ${(props) =>
+        props.$isActive ? '1px solid #1fa46c' : 'none'};
+    color: ${(props) => (props.$isActive ? ' #1fa46c' : 'none')};
     &:hover {
         color: #1fa46c;
         font-weight: 600;
@@ -340,4 +364,41 @@ export const CategoryButton = styled.button`
     &:hover {
         background-color: #ddd;
     }
+`
+
+export const YearContainer = styled.div`
+    border-bottom: 1px solid #999999;
+`
+
+export const YearTitle = styled.h3`
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    margin-bottom: 12px;
+    margin-top: 12px;
+`
+
+export const MonthsContainer = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+    color: #000000;
+`
+
+export const MonthName = styled.div`
+    width: 102px;
+    height: 34px;
+    border-radius: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    background-color: #f4f5f6;
+    box-sizing: border-box;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
 `
