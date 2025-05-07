@@ -1,28 +1,28 @@
 import { useState } from 'react'
 import * as S from './main.styled'
 import PropTypes from 'prop-types'
+import { useEffect } from 'react';
 
-function MainPage() {
-    const [expenses, setExpenses] = useState([
-        {
-            description: 'Пятёрочка',
-            category: 'Еда',
-            date: '03.07.2024',
-            amount: '3 500 ₽',
-        },
-        {
-            description: 'Метро',
-            category: 'Транспорт',
-            date: '02.07.2024',
-            amount: '200 ₽',
-        },
-        {
-            description: 'Квартплата',
-            category: 'Жильё',
-            date: '01.07.2024',
-            amount: '5 000 ₽',
-        },
-    ])
+const categoryMapping = {
+    'Еда': 'food',
+    'Транспорт': 'transport',
+    'Жильё': 'housing',
+    'Развлечения': 'joy',
+    'Образование': 'education',
+    'Другое': 'others'
+  };
+  
+  const reverseCategoryMapping = {
+    'food': 'Еда',
+    'transport': 'Транспорт',
+    'housing': 'Жильё',
+    'joy': 'Развлечения',
+    'education': 'Образование',
+    'others': 'Другое'
+  };
+  
+  export function MainPage() {
+    const [expenses, setExpenses] = useState([])
     const [newDescription, setNewDescription] = useState('')
     const [newCategory, setNewCategory] = useState('')
     const [newDate, setNewDate] = useState('')
@@ -32,19 +32,18 @@ function MainPage() {
     const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false)
     const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false)
     const [errors, setErrors] = useState({
-        description: false,
-        category: false,
-        date: false,
-        amount: false,
+      description: false,
+      category: false,
+      date: false,
+      amount: false,
     })
-
     const [descriptionError, setDescriptionError] = useState(false)
     const [dateError, setDateError] = useState(false)
     const [amountError, setAmountError] = useState(false)
-
     const [editMode, setEditMode] = useState(false)
-    const [editingExpenseIndex, setEditingExpenseIndex] = useState(null)
-
+    const [editingExpenseId, setEditingExpenseId] = useState(null)
+  
+       
     const categories = [
         'Еда',
         'Транспорт',
@@ -80,7 +79,121 @@ function MainPage() {
         Образование: '/StudyIcon.svg',
         Другое: '/OtherIcon.svg',
     }
-
+    const fetchTransactions = async () => {
+        try {
+          const token = localStorage.getItem('token')
+          const params = new URLSearchParams()
+          
+          if (sortOrder === 'Дата') params.append('sortBy', 'date')
+          if (sortOrder === 'Сумма') params.append('sortBy', 'sum')
+          if (selectedCategory) params.append('filterBy', categoryMapping[selectedCategory])
+          
+          const response = await fetch(`https://wedev-api.sky.pro/api/transactions?${params}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+          
+          if (!response.ok) throw new Error('Ошибка загрузки')
+          
+          const data = await response.json()
+          
+          const formatted = data.map(t => ({
+            ...t,
+            category: reverseCategoryMapping[t.category],
+            date: new Date(t.date).toLocaleDateString('ru-RU'),
+            amount: `${t.sum.toLocaleString('ru-RU')} ₽`
+          }))
+          
+          setExpenses(formatted)
+        } catch (error) {
+          console.error('Ошибка:', error)
+        }
+      }
+    
+      useEffect(() => {
+        fetchTransactions()
+      }, [selectedCategory, sortOrder])
+    
+      const handleDelete = async (id) => {
+        try {
+          const token = localStorage.getItem('token')
+          const response = await fetch(
+            `https://wedev-api.sky.pro/api/transactions/${id}`, 
+            { 
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          )
+          
+          if (!response.ok) throw new Error('Ошибка удаления')
+          await fetchTransactions()
+        } catch (error) {
+          console.error('Ошибка:', error)
+        }
+      }
+    
+      const handleEditExpense = (expense) => {
+        setNewDescription(expense.description)
+        setNewCategory(expense.category)
+        setNewDate(expense.date)
+        setNewAmount(expense.amount.replace(' ₽', '').replace(/\s/g, ''))
+        setEditMode(true)
+        setEditingExpenseId(expense._id)
+        setErrors({ description: false, category: false, date: false, amount: false })
+        setDescriptionError(false)
+        setDateError(false)
+        setAmountError(false)
+      }
+    
+      const handleAddExpense = async () => {
+        const newErrors = {
+          description: !newDescription,
+          category: !newCategory,
+          date: !newDate || !isValidDateFormat(newDate),
+          amount: !newAmount || !isValidAmountFormat(newAmount),
+        }
+    
+        setErrors(newErrors)
+        if (Object.values(newErrors).some(error => error)) return
+    
+        try {
+          const token = localStorage.getItem('token')
+          const [day, month, year] = newDate.split('.')
+          
+          const response = await fetch(
+            editMode 
+              ? `https://wedev-api.sky.pro/api/transactions/${editingExpenseId}`
+              : 'https://wedev-api.sky.pro/api/transactions', 
+            {
+              method: editMode ? 'PATCH' : 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                description: newDescription,
+                sum: parseInt(newAmount.replace(/\s/g, '')),
+                category: categoryMapping[newCategory],
+                date: `${month}-${day}-${year}`
+              })
+            }
+          )
+          
+          if (!response.ok) throw new Error('Ошибка сохранения')
+          
+          // Сброс формы
+          setNewDescription('')
+          setNewCategory('')
+          setNewDate('')
+          setNewAmount('')
+          setEditMode(false)
+          setEditingExpenseId(null)
+          
+          await fetchTransactions()
+        } catch (error) {
+          console.error('Ошибка:', error)
+        }
+      }
+    
     const handleDescriptionChange = (e) => {
         const value = e.target.value
         setNewDescription(value)
@@ -156,82 +269,111 @@ function MainPage() {
         )
     }
 
-    const handleEditExpense = (index) => {
-        const expense = expenses[index]
-        setNewDescription(expense.description)
-        setNewCategory(expense.category)
-        setNewDate(expense.date)
-        setNewAmount(expense.amount.replace(' ₽', ''))
-        setEditMode(true)
-        setEditingExpenseIndex(index)
-        setErrors({
-            description: false,
-            category: false,
-            date: false,
-            amount: false,
-        })
-        setDescriptionError(false)
-        setDateError(false)
-        setAmountError(false)
-    }
+    // const handleEditExpense = (index) => {
+    //     const expense = expenses[index]
+    //     setNewDescription(expense.description)
+    //     setNewCategory(expense.category)
+    //     setNewDate(expense.date)
+    //     setNewAmount(expense.amount.replace(' ₽', ''))
+    //     setEditMode(true)
+    //     setEditingExpenseId(expense._id)
+    //     setErrors({
+    //         description: false,
+    //         category: false,
+    //         date: false,
+    //         amount: false,
+    //     })
+    //     setDescriptionError(false)
+    //     setDateError(false)
+    //     setAmountError(false)
+    // }
 
-    const handleAddExpense = () => {
-        const newErrors = {
-            description: !newDescription,
-            category: !newCategory,
-            date: !newDate || !isValidDateFormat(newDate),
-            amount: !newAmount || !isValidAmountFormat(newAmount),
-        }
+    // const handleAddExpense = async () => {
+     
+    //     const newErrors = {
+    //         description: !newDescription,
+    //         category: !newCategory,
+    //         date: !newDate || !isValidDateFormat(newDate),
+    //         amount: !newAmount || !isValidAmountFormat(newAmount),
+    //       }
+      
+    //       setErrors(newErrors)
+    //       if (Object.values(newErrors).some(error => error)) return
+      
+    //       try {
+    //         const token = localStorage.getItem('token')
+    //         const [day, month, year] = newDate.split('.')
+            
+    //         const response = await fetch(
+    //           editMode 
+    //             ? `https://wedev-api.sky.pro/api/transactions/${editingExpenseId}`
+    //             : 'https://wedev-api.sky.pro/api/transactions', 
+    //           {
+    //             method: editMode ? 'PATCH' : 'POST',
+    //             headers: {
+    //               'Content-Type': 'application/json',
+    //               Authorization: `Bearer ${token}`
+    //             },
+    //             body: JSON.stringify({
+    //               description: newDescription,
+    //               sum: parseInt(newAmount.replace(/\s/g, '')),
+    //               category: categoryMapping[newCategory],
+    //               date: `${month}-${day}-${year}`
+    //             })
+    //           }
+    //         )
+            
+    //         if (!response.ok) throw new Error('Ошибка сохранения')
+            
+    //             setNewDescription('')
+    //             setNewCategory('')
+    //             setNewDate('')
+    //             setNewAmount('')
+    //             setEditMode(false)
+    //             setEditingExpenseId(null)
+                
+    //             await fetchTransactions()
+    //           } catch (error) {
+    //             console.error('Ошибка:', error)
+    //           }
+    //         }
+        
+    //     if (editMode) {
+    //         const updatedExpenses = [...expenses]
+    //         updatedExpenses[editingExpenseId] = {
+    //             description: newDescription,
+    //             category: newCategory,
+    //             date: newDate,
+    //             amount: `${newAmount} ₽`,
+    //         }
+    //         setExpenses(updatedExpenses)
+    //         setEditMode(false)
+    //         setEditingExpenseId(null)
+    //     } else {
+    //         const newExpense = {
+    //             description: newDescription,
+    //             category: newCategory,
+    //             date: newDate,
+    //             amount: `${newAmount} ₽`,
+    //         }
+    //         setExpenses([...expenses, newExpense])
+    //     }
 
-        setErrors(newErrors)
-        setDescriptionError(newErrors.description)
-        setDateError(newErrors.date)
-        setAmountError(newErrors.amount)
-
-        if (
-            newErrors.description ||
-            newErrors.category ||
-            newErrors.date ||
-            newErrors.amount
-        ) {
-            return
-        }
-
-        if (editMode) {
-            const updatedExpenses = [...expenses]
-            updatedExpenses[editingExpenseIndex] = {
-                description: newDescription,
-                category: newCategory,
-                date: newDate,
-                amount: `${newAmount} ₽`,
-            }
-            setExpenses(updatedExpenses)
-            setEditMode(false)
-            setEditingExpenseIndex(null)
-        } else {
-            const newExpense = {
-                description: newDescription,
-                category: newCategory,
-                date: newDate,
-                amount: `${newAmount} ₽`,
-            }
-            setExpenses([...expenses, newExpense])
-        }
-
-        setNewDescription('')
-        setNewCategory('')
-        setNewDate('')
-        setNewAmount('')
-        setErrors({
-            description: false,
-            category: false,
-            date: false,
-            amount: false,
-        })
-        setDescriptionError(false)
-        setDateError(false)
-        setAmountError(false)
-    }
+    //     setNewDescription('')
+    //     setNewCategory('')
+    //     setNewDate('')
+    //     setNewAmount('')
+    //     setErrors({
+    //         description: false,
+    //         category: false,
+    //         date: false,
+    //         amount: false,
+    //     })
+    //     setDescriptionError(false)
+    //     setDateError(false)
+    //     setAmountError(false)
+    // }
+ 
 
     const toggleCategoryDropdown = () => {
         setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
@@ -272,6 +414,7 @@ function MainPage() {
             return amountB - amountA
         }
     })
+
 
     return (
         <S.MainBlock>
@@ -395,7 +538,7 @@ function MainPage() {
                                     key={index}
                                     $isEditing={
                                         editMode &&
-                                        editingExpenseIndex === index
+                                        editingExpenseId === expense._id
                                     }
                                 >
                                     <S.TableCell>
@@ -421,8 +564,8 @@ function MainPage() {
                                             <img
                                                 src={
                                                     editMode &&
-                                                    editingExpenseIndex ===
-                                                        index
+                                                    editingExpenseId ===
+                                                    expense._id
                                                         ? 'EditBtnGreen.svg'
                                                         : 'EditBtn.svg'
                                                 }
@@ -435,7 +578,7 @@ function MainPage() {
                                         </button>
                                     </S.TableCell>
                                     <S.TableCell>
-                                        <button
+                                        <button onClick={() => handleDelete(expense._id)}
                                             style={{
                                                 border: 'none',
                                                 background: 'none',
@@ -446,8 +589,8 @@ function MainPage() {
                                             <img
                                                 src={
                                                     editMode &&
-                                                    editingExpenseIndex ===
-                                                        index
+                                                    editingExpenseId ===
+                                                        expense._id
                                                         ? 'DelBtnGreen.svg'
                                                         : 'DelBtn.svg'
                                                 }
@@ -650,10 +793,11 @@ function MainPage() {
             </S.ContentContainer>
         </S.MainBlock>
     )
-}
 
+}
 MainPage.propTypes = {
     isEditing: PropTypes.bool.isRequired,
 }
+
 
 export default MainPage
