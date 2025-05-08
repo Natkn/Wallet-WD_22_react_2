@@ -10,6 +10,7 @@ import {
     ModalInput,
     ModalBtnEnter,
     ModalFormGroup,
+    ErrorMessage,
 } from './AuthForm.styled'
 
 function AuthForm() {
@@ -189,23 +190,17 @@ function AuthForm() {
                                 }
                             />
                             {errors.name && fieldTouched.name && (
-                                <p style={{ color: 'red', fontSize: '0.8em' }}>
-                                    {errors.name}
-                                </p>
+                                <ErrorMessage>{errors.name}</ErrorMessage>
                             )}
 
                             {errors.login && fieldTouched.login && (
-                                <p style={{ color: 'red', fontSize: '0.8em' }}>
-                                    {errors.login}
-                                </p>
+                                <ErrorMessage>{errors.login}</ErrorMessage>
                             )}
                             {errors.password && fieldTouched.password && (
-                                <p style={{ color: 'red', fontSize: '0.8em' }}>
-                                    {errors.password}
-                                </p>
+                                <ErrorMessage>{errors.password}</ErrorMessage>
                             )}
                             {formError && (
-                                <p className="error-message">{formError}</p>
+                                <ErrorMessage>{formError}</ErrorMessage>
                             )}
                             <ModalBtnEnter
                                 type="submit"
