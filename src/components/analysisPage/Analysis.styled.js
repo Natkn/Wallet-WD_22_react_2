@@ -30,6 +30,9 @@ export const ExpensesTableContainer = styled.div`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 32px;
     overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    height: 540px;
 `
 
 export const NewExpenseContainer = styled.div`
@@ -41,7 +44,7 @@ export const NewExpenseContainer = styled.div`
     padding: 32px;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 540px;
 `
 
 export const NewExpenseTitle = styled.h3`
@@ -102,6 +105,7 @@ export const DaysOfWeek = styled.div`
     background: #fff;
     z-index: 1;
     padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
 `
 
 export const DayOfWeek = styled.div`
@@ -114,26 +118,28 @@ export const CalendarGrid = styled.div`
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
     flex-grow: 1;
-    height: 300px;
+    height: 472px;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-right: 6px;
+    -webkit-overflow-scrolling: auto;
+    overflow-y: overlay;
     scrollbar-width: thin;
     scrollbar-color: #D9D9D9 transparent;
-
     &::-webkit-scrollbar {
-        width: 6px;
-        border-radius: 30px;
+        width: 6px !important;
+        border-radius: 30px !important;
     }
-
     &::-webkit-scrollbar-track {
-        background: transparent;
-        border-radius: 30px;
+        background: transparent !important;
+        border-radius: 30px !important;
     }
-
     &::-webkit-scrollbar-thumb {
-        background: #D9D9D9;
-        border-radius: 30px;
-        width: 6px;
+        background: #D9D9D9 !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-button {
+        display: none !important;
     }
 `
 
@@ -145,11 +151,19 @@ export const Day = styled.div`
     justify-content: center;
     cursor: pointer;
     border-radius: 50%;
-    background: ${({ $selected }) => ($selected ? '#DBFFE9' : 'transparent')};
-    color: ${({ $today }) => ($today ? '#1FA46C' : '#000')}; /* Исправили $active на $today */
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    vertical-align: middle;
+
+    background: ${({ $selected }) => ($selected ? '#DBFFE9' : '#F4F5F6')};
+    color: ${({ $today }) => ($today ? '#1FA46C' : '#000')};
 
     &:hover {
         background: #DBFFE9;
+        color: #1FA46C;
     }
 `
 
@@ -172,41 +186,66 @@ export const Placeholder = styled.div`
 
 export const MonthList = styled.div`
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
     flex-grow: 1;
-    height: 150px;
+    height: 504px;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-right: 6px;
+    -webkit-overflow-scrolling: auto;
+    overflow-y: overlay;
     scrollbar-width: thin;
     scrollbar-color: #D9D9D9 transparent;
-
     &::-webkit-scrollbar {
-        width: 6px;
+        width: 6px !important;
+        border-radius: 30px !important;
     }
-
     &::-webkit-scrollbar-track {
-        background: transparent;
-        border-radius: 30px;
+        background: transparent !important;
+        border-radius: 30px !important;
     }
-
     &::-webkit-scrollbar-thumb {
-        background: #D9D9D9;
-        border-radius: 30px;
-        width: 6px;
+        background: #D9D9D9 !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-button {
+        display: none !important;
     }
 `
 
+export const YearHeader = styled.div`
+    font-weight: 600;
+    font-size: 16px;
+    text-align: left;
+    padding: 10px 0;
+    color: #000;
+`
+
+export const MonthGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+`
+
 export const Month = styled.div`
-    width: calc(33.33% - 7px);
     padding: 10px;
     text-align: center;
     cursor: pointer;
-    border-radius: 8px;
-    background: ${({ $selected }) => ($selected ? '#DBFFE9' : 'transparent')};
+    border-radius: 30px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    vertical-align: middle;
+
+    background: ${({ $selected }) => ($selected ? '#DBFFE9' : '#F4F5F6')};
+    color: ${({ $today }) => ($today ? '#1FA46C' : '#000')};
 
     &:hover {
         background: #DBFFE9;
+        color: #1FA46C;
     }
 `
 

@@ -20,11 +20,10 @@ import { useExpenses } from '../../ExpenseContext'
 
 function AnalysisPage() {
     const { expenses = [] } = useExpenses() || {}
-    const [currentDate] = useState(new Date()) // Убрали setCurrentDate
-    const [selectedStartDate, setSelectedStartDate] = useState(new Date())
-    const [selectedEndDate, setSelectedEndDate] = useState(new Date())
+    const [currentDate] = useState(new Date(2024, 6, 1))
+    const [selectedStartDate, setSelectedStartDate] = useState(new Date(2024, 6, 1))
+    const [selectedEndDate, setSelectedEndDate] = useState(new Date(2024, 6, 31))
     const [selectedPeriod, setSelectedPeriod] = useState('Месяц')
-    const year = getYear(currentDate)
 
     const getPeriodRange = () => {
         if (selectedStartDate && selectedEndDate) {
@@ -35,11 +34,18 @@ function AnalysisPage() {
 
     const periodRange = getPeriodRange()
     
-    // Все дни года для вкладки "Месяц"
     const daysOfYear = eachDayOfInterval({ start: startOfYear(currentDate), end: endOfYear(currentDate) })
     
-    // Для вкладки "Год" отображаем месяцы
-    const months = eachMonthOfInterval({ start: startOfYear(currentDate), end: endOfYear(currentDate) })
+    // Генерация списка годов и месяцев с 2000 по 2050
+    const startYear = 2000
+    const endYear = 2050
+    const yearMonthList = []
+    for (let year = startYear; year <= endYear; year++) {
+        const yearDate = new Date(year, 0, 1)
+        yearMonthList.push({ type: 'yearHeader', year })
+        const months = eachMonthOfInterval({ start: yearDate, end: endOfYear(yearDate) })
+        yearMonthList.push({ type: 'monthGrid', months, year })
+    }
 
     const handleDayClick = (day) => {
         if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
@@ -85,6 +91,7 @@ function AnalysisPage() {
 
     const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
 
+    // Фильтрация расходов по выбранному периоду
     const filteredExpenses = expenses.filter((expense) => {
         const expenseDate = new Date(expense.date.split('.').reverse().join('-'))
         return expenseDate >= periodRange.start && expenseDate <= periodRange.end
@@ -99,19 +106,16 @@ function AnalysisPage() {
         const dayMonth = getMonth(day)
         if (currentMonth !== dayMonth) {
             currentMonth = dayMonth
-            // Добавляем заголовок месяца
             calendarDays.push({
                 type: 'monthHeader',
                 month: format(day, 'MMMM', { locale: ru }),
             })
-            // Добавляем пустые ячейки для выравнивания первого дня месяца
-            const firstDayOfMonth = getDay(startOfMonth(day)) // 0 (вс), 1 (пн), ..., 6 (сб)
-            const offset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1 // Смещение для пн-пт
+            const firstDayOfMonth = getDay(startOfMonth(day))
+            const offset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1
             for (let i = 0; i < offset; i++) {
                 calendarDays.push({ type: 'placeholder' })
             }
         }
-        // Добавляем сам день
         calendarDays.push({
             type: 'day',
             day,
@@ -139,9 +143,6 @@ function AnalysisPage() {
                     </S.NewExpenseTitle>
 
                     <S.CalendarContainer>
-                        <S.CalendarTitle>
-                            {year}
-                        </S.CalendarTitle>
                         {selectedPeriod === 'Месяц' && (
                             <>
                                 <S.DaysOfWeek>
@@ -178,15 +179,31 @@ function AnalysisPage() {
                         )}
                         {selectedPeriod === 'Год' && (
                             <S.MonthList>
-                                {months.map((month) => (
-                                    <S.Month
-                                        key={month.toISOString()}
-                                        onClick={() => handleMonthClick(month)}
-                                        $selected={isSelectedMonth(month)}
-                                    >
-                                        {format(month, 'MMMM', { locale: ru })}
-                                    </S.Month>
-                                ))}
+                                {yearMonthList.map((item, index) => {
+                                    if (item.type === 'yearHeader') {
+                                        return (
+                                            <S.YearHeader key={`year-${getYear(item.year)}`}>
+                                                {getYear(item.year)}
+                                            </S.YearHeader>
+                                        )
+                                    } else {
+                                        const months = item.months
+                                        const year = item.year
+                                        return (
+                                            <S.MonthGrid key={`month-grid-${getYear(year)}-${index}`}>
+                                                {months.map((month) => (
+                                                    <S.Month
+                                                        key={month.toISOString()}
+                                                        onClick={() => handleMonthClick(month)}
+                                                        $selected={isSelectedMonth(month)}
+                                                    >
+                                                        {format(month, 'MMMM', { locale: ru })}
+                                                    </S.Month>
+                                                ))}
+                                            </S.MonthGrid>
+                                        )
+                                    }
+                                })}
                             </S.MonthList>
                         )}
                     </S.CalendarContainer>
@@ -199,7 +216,11 @@ function AnalysisPage() {
                             {format(periodRange.end, 'dd MMMM yyyy', { locale: ru })}
                         </S.FiltersContainer>
                     </S.TableHeader>
-                    <ChartComponent expenses={filteredExpenses} />
+                    {filteredExpenses.length > 0 ? (
+                        <ChartComponent expenses={filteredExpenses} />
+                    ) : (
+                        <div>Нет данных для отображения за выбранный период.</div>
+                    )}
                 </S.ExpensesTableContainer>
             </S.ContentContainer>
         </S.MainBlock>

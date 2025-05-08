@@ -9,14 +9,19 @@ import PropTypes from 'prop-types'
 
 const ChartContainer = styled.div`
     width: 100%;
-    height: 387px;
-    padding: 20px;
+    height: calc(100% - 20px);
+    flex-grow: 1;
+    padding: 40px 20px 20px 20px;
     margin-bottom: 0;
     border-radius: 12px;
+    box-sizing: border-box;
+    min-height: 400px;
 `
 
 const ChartComponent = ({ expenses }) => {
     const chartRef = useRef(null)
+
+    console.log('Expenses in ChartComponent:', expenses)
 
     const categoryTotals = useMemo(() => {
         const totals = {
@@ -33,6 +38,9 @@ const ChartComponent = ({ expenses }) => {
         })
         return totals
     }, [expenses])
+
+    const maxValue = Math.max(...Object.values(categoryTotals))
+    const yAxisMax = maxValue * 1.2 
 
     const barChartData = useMemo(() => {
         return {
@@ -78,12 +86,23 @@ const ChartComponent = ({ expenses }) => {
                 font: { weight: 600, size: 16, family: 'Montserrat' },
                 formatter: (value) => (value > 0 ? value + ' ₽' : ''),
                 anchor: 'end',
-                align: 'top',
+                align: 'top', 
+                offset: 10,
+                clamp: true, 
             },
         },
         scales: {
-            x: { type: 'category', grid: { drawBorder: false, display: false }, ticks: { font: { size: 12 } } },
-            y: { type: 'linear', display: false },
+            x: {
+                type: 'category',
+                grid: { drawBorder: false, display: false },
+                ticks: { font: { size: 12 } },
+            },
+            y: {
+                type: 'linear',
+                display: false,
+                max: yAxisMax,
+                padding: { top: 40 },
+            },
         },
     }
 
