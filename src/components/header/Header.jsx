@@ -15,7 +15,10 @@ import { Link, useLocation } from 'react-router-dom'
 
 function Header() {
     const location = useLocation()
-    const showButtons = location.pathname !== '/'
+    const userInfo = localStorage.getItem('userInfo')
+    const isAuthenticated = !!userInfo // Проверка авторизации
+    const excludedPaths = ['/', '/signin', '/signup']
+    const showButtons = isAuthenticated && !excludedPaths.includes(location.pathname)
     const isMyExpensesActive = location.pathname === '/my-expenses'
     const isExpenseAnalysisActive = location.pathname === '/expense-analysis'
 
@@ -40,7 +43,7 @@ function Header() {
                             </Link>
                         </HeaderCenter>
                         <HeaderRight>
-                            <Link to="/log-out">
+                            <Link to="/">
                                 <LogoutButton onClick={cleanUserData}>
                                     Выйти
                                 </LogoutButton>
@@ -52,5 +55,4 @@ function Header() {
         </HeaderContainer>
     )
 }
-
 export default Header

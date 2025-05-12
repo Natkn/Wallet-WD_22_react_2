@@ -138,3 +138,25 @@ export const ModalFormGroup = styled.div`
         }
     }
 `
+export const ErrorBlock = styled.div`
+  margin: 10px 0;
+  text-align: center;
+`;
+
+export const ErrorMessage = styled.div`
+  color: #ff6b6b;
+  font-size: 14px;
+  margin: 5px 0;
+`;
+export const InputWrapper = styled.div`
+  position: relative;
+`;
+
+export const RequiredStar = styled.span`
+position: absolute;
+right: 8px; // Фиксированный отступ
+top: 50%;
+transform: translateY(-50%);
+color: #F84D4D;
+opacity: ${props => props.$visible ? 1 : 0};
+`;

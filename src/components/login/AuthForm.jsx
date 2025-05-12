@@ -7,6 +7,7 @@ import { signIn, signUp } from '../../services/auth'
 function AuthForm() {
     const navigate = useNavigate()
     const [isSignUp, setIsSignUp] = useState(false)
+    const [formSubmitted, setFormSubmitted] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -15,10 +16,10 @@ function AuthForm() {
     })
 
     const [fieldValid, setFieldValid] = useState({
-        name: true,
-        login: true,
-        password: true,
-    })
+        name: false, // Было true
+        login: false, // Было true
+        password: false, // Было true
+    });
 
     const [fieldTouched, setFieldTouched] = useState({
         name: false,
@@ -36,36 +37,50 @@ function AuthForm() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false)
 
     const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData({ ...formData, [name]: value })
-        setFieldTouched((prev) => ({ ...prev, [name]: true }))
-        validateField(name, value)
-    }
-
-    const validateField = (fieldName, value) => {
-        let isValid = false
-        switch (fieldName) {
-            case 'name':
-                isValid = isSignUp
-                    ? value.length > 0 && !/\d/.test(value)
-                    : true
-                break
-            case 'login':
-                isValid = isValidEmail(value)
-                break
-            case 'password':
-                isValid = value.length >= 6
-                break
-            default:
-                break
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+      
+        // Сброс ошибки для текущего поля
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      
+        // Принудительная валидация всех полей
+        validateField(name, value);
+        if (formSubmitted) {
+          const isNameValid = isSignUp ? validateField('name', formData.name) : true;
+          const isLoginValid = validateField('login', formData.login);
+          const isPasswordValid = validateField('password', formData.password);
         }
-        setFieldValid((prev) => ({ ...prev, [fieldName]: isValid }))
-        setErrors((prev) => ({
-            ...prev,
-            [fieldName]: isValid ? '' : getErrorMessage(fieldName),
-        }))
-        return isValid
-    }
+      };
+
+      const validateField = (fieldName, value) => {
+        let isValid = false;
+        switch (fieldName) {
+            case 'login':
+                isValid = /\S+@\S+\.\S+/.test(value);
+                break;
+            case 'password':
+                isValid = value.length >= 6;
+                break;
+            case 'name':
+                isValid = isSignUp ? value.trim().length > 0 && !/\d/.test(value) : true;
+                break;
+            default:
+                break;
+        }
+    
+        // Всегда обновляем валидность поля
+        setFieldValid(prev => ({ ...prev, [fieldName]: isValid }));
+        
+        // Ошибки только после отправки/фокуса
+        if (formSubmitted || fieldTouched[fieldName]) {
+            setErrors(prev => ({
+                ...prev,
+                [fieldName]: isValid ? '' : getErrorMessage(fieldName)
+            }));
+        }
+        
+        return isValid;
+    };
 
     const getErrorMessage = (fieldName) => {
         switch (fieldName) {
@@ -81,18 +96,28 @@ function AuthForm() {
     }
 
     useEffect(() => {
-        const hasErrors = Object.values(errors).some((error) => error !== '')
-        const allFieldsValid =
-            fieldValid.login &&
-            fieldValid.password &&
-            (!isSignUp || fieldValid.name)
-
-        setIsButtonDisabled(hasErrors || !allFieldsValid)
-    }, [errors, fieldValid, isSignUp])
-
-    const handleSubmit = async (e) => {
+        const hasErrors = Object.values(errors).some(error => error !== '');
+        const allFieldsValid = 
+          (!isSignUp || fieldValid.name) &&
+          fieldValid.login &&
+          fieldValid.password;
+      
+        // Блокировать кнопку, если есть ошибки или поля не валидны
+        setIsButtonDisabled(hasErrors || !allFieldsValid);
+      }, [errors, fieldValid, isSignUp]);
+      
+    
+      
+      const handleSubmit = async (e) => {
         e.preventDefault();
+        setFormSubmitted(true); // Активируем флаг отправки
         
+        // Проверка всех полей
+        const isNameValid = isSignUp ? validateField('name', formData.name) : true;
+        const isLoginValid = validateField('login', formData.login);
+        const isPasswordValid = validateField('password', formData.password);
+        
+        if (!isNameValid || !isLoginValid || !isPasswordValid) return;
         // Валидация полей
         const newErrors = {};
         if (isSignUp && !formData.name.trim()) {
@@ -128,9 +153,9 @@ function AuthForm() {
         }
     };
 
-    const isValidEmail = (email) => {
-        return /\S+@\S+\.\S+/.test(email)
-    }
+    // const isValidEmail = (email) => {
+    //     return /\S+@\S+\.\S+/.test(email)
+    // }
     // const textBtn= () => {
     //     return isSignUp ? 'Зарегистрироваться' : 'Войти'
     // }
@@ -146,49 +171,76 @@ function AuthForm() {
                             <h2>{isSignUp ? 'Регистрация' : 'Вход'}</h2>
                         </S.ModalTtl>
                         <S.ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
+                          
                             {isSignUp && (
-                                <BaseInput
-                                    error={errors.name}
-                                    type="text"
-                                    name="name"
-                                    id="formname"
-                                    placeholder="Имя"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    $isValid={fieldTouched.name && !errors.name}
-                                    $isInvalid={fieldTouched.name && errors.name}
-                                />
-                            )}
-                            <BaseInput
-                                error={errors.login}
-                                type="text"
-                                name="login"
-                                id="formlogin"
-                                placeholder="Эл. почта"
-                                value={formData.login}
-                                onChange={handleChange}
-                                autoComplete="email"
-                                $isValid={fieldTouched.login && !errors.login}
-                                $isInvalid={fieldTouched.login && errors.login}
-                            />
-                            <BaseInput
-                                error={errors.password}
-                                type="password"
-                                name="password"
-                                id="formpassword"
-                                placeholder="Пароль"
-                                value={formData.password}
-                                onChange={handleChange}
-                                autoComplete="current-password"
-                                $isValid={fieldTouched.password && !errors.password}
-                                $isInvalid={fieldTouched.password && errors.password}
-                            />
+  <S.InputWrapper>
+    <BaseInput
+      type="text"
+      name="name"
+      id="formname"
+      placeholder="Имя"
+      value={formData.name}
+      onChange={handleChange}
+      $isValid={!formSubmitted && fieldValid.name}
+      $isInvalid={formSubmitted && !fieldValid.name}
+    />
+    <S.RequiredStar 
+      $visible={formSubmitted && !fieldValid.name}
+      $hasValue={!!formData.name}
+    >
+      *
+    </S.RequiredStar>
+  </S.InputWrapper>
+)}
+
+<S.InputWrapper>
+  <BaseInput
+    type="text"
+    name="login"
+    placeholder="Эл. почта"
+    value={formData.login}
+    onChange={handleChange}
+    $isValid={fieldValid.login}
+    $isInvalid={!fieldValid.login && (formSubmitted || fieldTouched.login)}
+  />
+  <S.RequiredStar 
+    $visible={formSubmitted && !fieldValid.login}
+  >
+    *
+  </S.RequiredStar>
+</S.InputWrapper>
+
+<S.InputWrapper>
+  <BaseInput
+    type="password"
+    name="password"
+    id="formpassword"
+    placeholder="Пароль"
+    value={formData.password}
+    onChange={handleChange}
+    $isValid={!formSubmitted && fieldValid.password}
+    $isInvalid={formSubmitted && !fieldValid.password}
+  />
+  <S.RequiredStar 
+    $visible={formSubmitted && !fieldValid.password}
+    $hasValue={!!formData.password}
+  >
+    *
+  </S.RequiredStar>
+</S.InputWrapper>
                             
-                            {formError && (
-                                <p style={{ color: 'red', fontSize: '0.8em', textAlign: 'center' }}>
-                                    {formError}
-                                </p>
-                            )}
+                            {/* Блок для отображения всех ошибок */}
+                            {(formSubmitted && Object.values(errors).some(error => error) || formError) && (
+  <S.ErrorBlock>
+    {Object.entries(errors).map(([field, error]) => {
+      if (!isSignUp && field === 'name') return null;
+      return formSubmitted && error && (
+        <S.ErrorMessage key={field}>{error}</S.ErrorMessage>
+      )
+    })}
+    {formError && <S.ErrorMessage>{formError}</S.ErrorMessage>}
+  </S.ErrorBlock>
+)}
                             
                             <BaseButton
                                 type="submit"

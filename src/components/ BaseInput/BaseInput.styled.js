@@ -10,24 +10,29 @@ export const Container = styled.div`
 
 export const Input = styled.input`
     width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #94A6BE66;
+    padding: 8px 30px 8px 10px; 
+    border: 0.5px solid;
+    border-color: ${({ $isInvalid, $isValid }) => 
+        $isInvalid ? '#F84D4D' : 
+        $isValid ? '#1FA46C' : '#C4C4C4'};
+    background-color: ${({ $isInvalid, $isValid }) => 
+        $isInvalid ? '#FFEBEB' : 
+        $isValid ? '#DBFFE9' : 'transparent'};
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 400;
-    background-color: white;
     outline: none;
+
     &:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 4px #3b82f6;
+        border-color: ${({ $isInvalid }) => ($isInvalid ? '#F84D4D' : '#3b82f6')};
+        box-shadow: ${({ $isInvalid }) => ($isInvalid ? '0 0 4px #F84D4D' : '0 0 4px #3b82f6')};
     }
-`
+`;
 
 export const Button = styled.button`
      padding: 10px 20px;
     height: 39px;
     color: #fff;
-    border: none;
+  border:none;
     border-radius: 4px;
     margin-top: 16px;
     margin-bottom: 14px;
@@ -49,6 +54,12 @@ export const Button = styled.button`
         background-color: #999999;
         cursor: not-allowed;
     }
+    &::placeholder {
+        &::after {
+            content: ' *';
+            color: #F84D4D;
+    }
+  }
 `
 
 export const Text = styled.p`
