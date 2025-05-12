@@ -9,22 +9,43 @@ export const Container = styled.div`
 `
 
 export const Input = styled.input`
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #94A6BE66;
-    border-radius: 8px;
-    font-size: 14px;
+   padding: 10px;
+    border-radius: 6px;
+    border: 0.5px solid #999999;
+    font-family: Montserrat;
     font-weight: 400;
-    background-color: white;
-    outline: none;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    vertical-align: middle;
     &:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 4px #3b82f6;
+        outline: none;
+        border-color: #2d2b2b;
     }
+
+    &::placeholder {
+        color: #999999;
+    }
+    ${(props) =>
+        props.$isValid &&
+        `
+    background-color: #DBFFE9;
+    outline: none; 
+    box-shadow: 0 0 5px green; 
+  `}
+
+    ${(props) =>
+        props.$isInvalid &&
+        `
+    background-color: #FFEBEB;
+    outline: none;
+    box-shadow: 0 0 5px #F25050;
+  `}
 `
 
+
 export const Button = styled.button`
-     padding: 10px 20px;
+    padding: 10px 20px;
     height: 39px;
     color: #fff;
     border: none;

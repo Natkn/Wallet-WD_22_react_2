@@ -109,6 +109,8 @@ function AuthForm() {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            setIsButtonDisabled(true)
+            setFormError('Пожалуйста, исправьте ошибки в форме.')
             return;
         }
 
@@ -121,7 +123,9 @@ function AuthForm() {
                 token: response.token,
                 user: response
             }));
-
+            setErrors({})
+            setFormError('')
+            setIsButtonDisabled(false)
             navigate('/my-expenses');
         } catch (error) {
             setFormError(error.message);
@@ -147,8 +151,7 @@ function AuthForm() {
                         </S.ModalTtl>
                         <S.ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
                             {isSignUp && (
-                                <BaseInput
-                                    error={errors.name}
+                                <BaseInput                                  
                                     type="text"
                                     name="name"
                                     id="formname"
@@ -160,7 +163,6 @@ function AuthForm() {
                                 />
                             )}
                             <BaseInput
-                                error={errors.login}
                                 type="text"
                                 name="login"
                                 id="formlogin"
@@ -171,8 +173,7 @@ function AuthForm() {
                                 $isValid={fieldTouched.login && !errors.login}
                                 $isInvalid={fieldTouched.login && errors.login}
                             />
-                            <BaseInput
-                                error={errors.password}
+                            <BaseInput                               
                                 type="password"
                                 name="password"
                                 id="formpassword"
@@ -184,10 +185,18 @@ function AuthForm() {
                                 $isInvalid={fieldTouched.password && errors.password}
                             />
                             
+                            {errors.name && fieldTouched.name && (
+                                <S.ErrorMessage>{errors.name}</S.ErrorMessage>
+                            )}
+
+                            {errors.login && fieldTouched.login && (
+                                <S.ErrorMessage>{errors.login}</S.ErrorMessage>
+                            )}
+                            {errors.password && fieldTouched.password && (
+                                <S.ErrorMessage>{errors.password}</S.ErrorMessage>
+                            )}
                             {formError && (
-                                <p style={{ color: 'red', fontSize: '0.8em', textAlign: 'center' }}>
-                                    {formError}
-                                </p>
+                                <S.ErrorMessage>{formError}</S.ErrorMessage>
                             )}
                             
                             <BaseButton
