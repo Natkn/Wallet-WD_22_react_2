@@ -14,8 +14,13 @@ import { cleanUserData } from '../../services/auth'
 import { Link, useLocation } from 'react-router-dom'
 
 function Header() {
-    const location = useLocation()
-    const showButtons = location.pathname !== '/'
+    const location = useLocation()   
+    const excludedPaths = ['/', '/signin', '/signup']
+    const userInfo = localStorage.getItem('userInfo')
+    const isAuthenticated = !!userInfo
+    const isMyExpensesActive = location.pathname === '/my-expenses'
+    const isExpenseAnalysisActive = location.pathname === '/expense-analysis'
+    const showButtons = isAuthenticated && !excludedPaths.includes(location.pathname)
 
     return (
         <HeaderContainer>
@@ -27,10 +32,10 @@ function Header() {
                     <HeaderButtons>
                         <HeaderCenter>
                             <Link to="/my-expenses">
-                                <HeaderButton>Мои расходы</HeaderButton>
+                                <HeaderButton $active={isMyExpensesActive}>Мои расходы</HeaderButton>
                             </Link>
                             <Link to="/expense-analysis">
-                                <HeaderButton>Анализ расходов</HeaderButton>
+                                <HeaderButton $active={isExpenseAnalysisActive}>Анализ расходов</HeaderButton>
                             </Link>
                         </HeaderCenter>
                         <HeaderRight>
