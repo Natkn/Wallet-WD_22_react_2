@@ -25,15 +25,14 @@
 Просмотр расходов за определенный период. 
 
 
-
-- Используемые технологии:
-React.
-JavaScript.
-React Hooks: useState, useEffect и тп.
-Styled Components.
-PropTypes.
-Date-fns.
-Chart.js.
+ Используемые технологии:
+-React.
+-JavaScript.
+-React Hooks: useState, useEffect и тп.
+-Styled Components.
+-PropTypes.
+-Date-fns.
+-Chart.js.
 
 
 Участники команды:
