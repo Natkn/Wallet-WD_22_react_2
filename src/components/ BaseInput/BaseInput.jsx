@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
 import * as S from './BaseInput.styled'
-function BaseInput({ error, type, name, id, placeholder, value, onChange, autoComplete, $isValid, $isInvalid }) {
-    return (
-      
+function BaseInput({type, name, id, placeholder, value, onChange, autoComplete, $isValid, $isInvalid }) {
+
+        <S.Container style={{ backgroundColor: '#fff' }}>
+
             <S.Input 
-                className={error ? 'error' : ''} 
-                style={error ? { borderColor: 'red' } : {}}
                 type={type}
                 placeholder={placeholder}
                 value={value}
@@ -17,8 +16,11 @@ function BaseInput({ error, type, name, id, placeholder, value, onChange, autoCo
                 $isInvalid={$isInvalid}
             />
             
-       
+
+        </S.Container>
+
     )
+
 }
 
 function BaseButton({ id, text, onClick, disabled }) {

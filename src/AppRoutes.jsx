@@ -1,10 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
 import MainPage from './components/main/mainPage';
 import Analysispage from './components/analysisPage/AnalysisPage';
-import AuthForm from './components/login/AuthForm';
+// import AuthForm from './components/login/AuthForm';
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
+import AuthFormPage from './components/login/AutchFormPage';
 function NotFoundPage() {
     return <h1>404 - Страница не найдена</h1>;
 }
@@ -41,15 +42,14 @@ function AppRoutes() {
 
     return (
         <Routes>
-        <Route path="/" element={<AuthForm />} />
-        <Route path="/signin" element={<AuthForm />} />
-        <Route path="/signup" element={<AuthForm />} />
-
+        <Route path="/" element={<AuthFormPage />} />
+        <Route path="/signin" element={<AuthFormPage />} />
+        <Route path="/signup" element={<AuthFormPage  />} />
         <Route path="/main" element={<MainPage />} />
         <Route path="/my-expenses" element={<MainPage />} />
         <Route path="/expense-analysis" element={<Analysispage />} />
 
-        <Route path="/log-out" element={<AuthForm />} />
+        <Route path="/log-out" element={<AuthFormPage />} />
 
         <Route path="*" element={<NotFoundPage />} />
     </Routes>
