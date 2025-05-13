@@ -1,17 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import {
-    Wrapper,
-    ContainerSignin,
-    Modal,
-    ModalBlock,
-    ModalTtl,
-    ModalFormLogin,
-    ModalInput,
-    ModalBtnEnter,
-    ModalFormGroup,
-    ErrorMessage,
-} from './AuthForm.styled'
+
+import * as S from './AuthForm.styled'
+import { BaseInput, BaseButton } from '../ BaseInput/BaseInput'
+import { signIn, signUp } from '../../services/auth'
+
 
 function AuthForm() {
     const navigate = useNavigate()
@@ -99,71 +92,79 @@ function AuthForm() {
         setIsButtonDisabled(hasErrors || !allFieldsValid)
     }, [errors, fieldValid, isSignUp])
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        navigate('/main')
-
-        let newErrors = {}
-        if (isSignUp && !formData.name) {
-            newErrors.name = 'Пожалуйста, введите ваше имя.'
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        // Валидация полей
+        const newErrors = {};
+        if (isSignUp && !formData.name.trim()) {
+            newErrors.name = 'Введите имя';
         }
-        if (!formData.login) {
-            newErrors.login = 'Пожалуйста, введите адрес электронной почты.'
-        } else if (!isValidEmail(formData.login)) {
-            newErrors.login =
-                'Пожалуйста, введите корректный адрес электронной почты.'
+        if (!formData.login.trim()) {
+            newErrors.login = 'Введите логин';
         }
-        if (!formData.password) {
-            newErrors.password = 'Пожалуйста, введите пароль.'
+        if (!formData.password.trim()) {
+            newErrors.password = 'Введите пароль';
         } else if (formData.password.length < 6) {
-            newErrors.password = 'Пароль должен содержать не менее 6 символов.'
+            newErrors.password = 'Пароль менее 6 символов';
         }
 
         if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors)
+            setErrors(newErrors);
             setIsButtonDisabled(true)
             setFormError('Пожалуйста, исправьте ошибки в форме.')
-            return
+            return;
         }
 
-        setErrors({})
-        setFormError('')
-        setIsButtonDisabled(false)
-        navigate('/main')
-    }
+        try {
+            const response = isSignUp 
+                ? await signUp(formData)
+                : await signIn(formData);
+
+            localStorage.setItem('userInfo', JSON.stringify({
+                token: response.token,
+                user: response
+            }));
+            setErrors({})
+            setFormError('')
+            setIsButtonDisabled(false)
+            navigate('/my-expenses');
+        } catch (error) {
+            setFormError(error.message);
+        }
+    };
 
     const isValidEmail = (email) => {
         return /\S+@\S+\.\S+/.test(email)
     }
+    // const textBtn= () => {
+    //     return isSignUp ? 'Зарегистрироваться' : 'Войти'
+    // }
+    // const text= textBtn()
+    
 
     return (
-        <Wrapper>
-            <ContainerSignin>
-                <Modal>
-                    <ModalBlock>
-                        <ModalTtl>
+        <S.Wrapper>
+            <S.ContainerSignin>
+                <S.Modal>
+                    <S.ModalBlock>
+                        <S.ModalTtl>
                             <h2>{isSignUp ? 'Регистрация' : 'Вход'}</h2>
-                        </ModalTtl>
-                        <ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
+                        </S.ModalTtl>
+                        <S.ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
                             {isSignUp && (
-                                <>
-                                    <ModalInput
-                                        type="text"
-                                        name="name"
-                                        id="formname"
-                                        placeholder="Имя"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        $isValid={
-                                            fieldTouched.name && !errors.name
-                                        }
-                                        $isInvalid={
-                                            fieldTouched.name && errors.name
-                                        }
-                                    />
-                                </>
+                                <BaseInput                                  
+                                    type="text"
+                                    name="name"
+                                    id="formname"
+                                    placeholder="Имя"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    $isValid={fieldTouched.name && !errors.name}
+                                    $isInvalid={fieldTouched.name && errors.name}
+                                />
                             )}
-                            <ModalInput
+                            <BaseInput
                                 type="text"
                                 name="login"
                                 id="formlogin"
@@ -174,7 +175,7 @@ function AuthForm() {
                                 $isValid={fieldTouched.login && !errors.login}
                                 $isInvalid={fieldTouched.login && errors.login}
                             />
-                            <ModalInput
+                            <BaseInput                               
                                 type="password"
                                 name="password"
                                 id="formpassword"
@@ -182,34 +183,38 @@ function AuthForm() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 autoComplete="current-password"
-                                $isValid={
-                                    fieldTouched.password && !errors.password
-                                }
-                                $isInvalid={
-                                    fieldTouched.password && errors.password
-                                }
+                                $isValid={fieldTouched.password && !errors.password}
+                                $isInvalid={fieldTouched.password && errors.password}
                             />
+                            
                             {errors.name && fieldTouched.name && (
-                                <ErrorMessage>{errors.name}</ErrorMessage>
+
+                                <S.ErrorMessage>{errors.name}</S.ErrorMessage>
                             )}
 
                             {errors.login && fieldTouched.login && (
-                                <ErrorMessage>{errors.login}</ErrorMessage>
+                                <S.ErrorMessage>{errors.login}</S.ErrorMessage>
                             )}
                             {errors.password && fieldTouched.password && (
-                                <ErrorMessage>{errors.password}</ErrorMessage>
+                                <S.ErrorMessage>{errors.password}</S.ErrorMessage>
                             )}
                             {formError && (
-                                <ErrorMessage>{formError}</ErrorMessage>
+                                <S.ErrorMessage>{formError}</S.ErrorMessage>
+
                             )}
-                            <ModalBtnEnter
+                            
+                            <BaseButton
                                 type="submit"
-                                id="btnEnter"
+                                onClick={handleSubmit}
+                                text={isSignUp ? 'Зарегистрироваться' : 'Войти'}
+                                id="btnEnter" 
                                 disabled={isButtonDisabled}
-                            >
-                                {isSignUp ? 'Зарегистрироваться' : 'Войти'}
-                            </ModalBtnEnter>
-                            <ModalFormGroup>
+                            />
+                                
+                                
+                          
+                            
+                            <S.ModalFormGroup>
                                 {isSignUp ? (
                                     <>
                                         <p>Уже есть аккаунт?</p>
@@ -231,12 +236,12 @@ function AuthForm() {
                                         </Link>
                                     </>
                                 )}
-                            </ModalFormGroup>
-                        </ModalFormLogin>
-                    </ModalBlock>
-                </Modal>
-            </ContainerSignin>
-        </Wrapper>
+                            </S.ModalFormGroup>
+                        </S.ModalFormLogin>
+                    </S.ModalBlock>
+                </S.Modal>
+            </S.ContainerSignin>
+        </S.Wrapper>
     )
 }
 
