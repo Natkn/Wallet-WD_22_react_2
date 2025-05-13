@@ -9,7 +9,6 @@ import { signIn, signUp } from '../../services/auth'
 function AuthForm() {
     const navigate = useNavigate()
     const [isSignUp, setIsSignUp] = useState(false)
-    const [formSubmitted, setFormSubmitted] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -18,10 +17,10 @@ function AuthForm() {
     })
 
     const [fieldValid, setFieldValid] = useState({
-        name: false, // Было true
-        login: false, // Было true
-        password: false, // Было true
-    });
+        name: true,
+        login: true,
+        password: true,
+    })
 
     const [fieldTouched, setFieldTouched] = useState({
         name: false,
@@ -39,50 +38,36 @@ function AuthForm() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false)
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-      
-        // Сброс ошибки для текущего поля
-        setErrors(prev => ({ ...prev, [name]: '' }));
-      
-        // Принудительная валидация всех полей
-        validateField(name, value);
-        if (formSubmitted) {
-          const isNameValid = isSignUp ? validateField('name', formData.name) : true;
-          const isLoginValid = validateField('login', formData.login);
-          const isPasswordValid = validateField('password', formData.password);
-        }
-      };
+        const { name, value } = e.target
+        setFormData({ ...formData, [name]: value })
+        setFieldTouched((prev) => ({ ...prev, [name]: true }))
+        validateField(name, value)
+    }
 
-      const validateField = (fieldName, value) => {
-        let isValid = false;
+    const validateField = (fieldName, value) => {
+        let isValid = false
         switch (fieldName) {
-            case 'login':
-                isValid = /\S+@\S+\.\S+/.test(value);
-                break;
-            case 'password':
-                isValid = value.length >= 6;
-                break;
             case 'name':
-                isValid = isSignUp ? value.trim().length > 0 && !/\d/.test(value) : true;
-                break;
+                isValid = isSignUp
+                    ? value.length > 0 && !/\d/.test(value)
+                    : true
+                break
+            case 'login':
+                isValid = isValidEmail(value)
+                break
+            case 'password':
+                isValid = value.length >= 6
+                break
             default:
-                break;
+                break
         }
-    
-        // Всегда обновляем валидность поля
-        setFieldValid(prev => ({ ...prev, [fieldName]: isValid }));
-        
-        // Ошибки только после отправки/фокуса
-        if (formSubmitted || fieldTouched[fieldName]) {
-            setErrors(prev => ({
-                ...prev,
-                [fieldName]: isValid ? '' : getErrorMessage(fieldName)
-            }));
-        }
-        
-        return isValid;
-    };
+        setFieldValid((prev) => ({ ...prev, [fieldName]: isValid }))
+        setErrors((prev) => ({
+            ...prev,
+            [fieldName]: isValid ? '' : getErrorMessage(fieldName),
+        }))
+        return isValid
+    }
 
     const getErrorMessage = (fieldName) => {
         switch (fieldName) {
@@ -98,28 +83,18 @@ function AuthForm() {
     }
 
     useEffect(() => {
-        const hasErrors = Object.values(errors).some(error => error !== '');
-        const allFieldsValid = 
-          (!isSignUp || fieldValid.name) &&
-          fieldValid.login &&
-          fieldValid.password;
-      
-        // Блокировать кнопку, если есть ошибки или поля не валидны
-        setIsButtonDisabled(hasErrors || !allFieldsValid);
-      }, [errors, fieldValid, isSignUp]);
-      
-    
-      
-      const handleSubmit = async (e) => {
+        const hasErrors = Object.values(errors).some((error) => error !== '')
+        const allFieldsValid =
+            fieldValid.login &&
+            fieldValid.password &&
+            (!isSignUp || fieldValid.name)
+
+        setIsButtonDisabled(hasErrors || !allFieldsValid)
+    }, [errors, fieldValid, isSignUp])
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setFormSubmitted(true); // Активируем флаг отправки
         
-        // Проверка всех полей
-        const isNameValid = isSignUp ? validateField('name', formData.name) : true;
-        const isLoginValid = validateField('login', formData.login);
-        const isPasswordValid = validateField('password', formData.password);
-        
-        if (!isNameValid || !isLoginValid || !isPasswordValid) return;
         // Валидация полей
         const newErrors = {};
         if (isSignUp && !formData.name.trim()) {
@@ -159,9 +134,9 @@ function AuthForm() {
         }
     };
 
-    // const isValidEmail = (email) => {
-    //     return /\S+@\S+\.\S+/.test(email)
-    // }
+    const isValidEmail = (email) => {
+        return /\S+@\S+\.\S+/.test(email)
+    }
     // const textBtn= () => {
     //     return isSignUp ? 'Зарегистрироваться' : 'Войти'
     // }
@@ -177,9 +152,7 @@ function AuthForm() {
                             <h2>{isSignUp ? 'Регистрация' : 'Вход'}</h2>
                         </S.ModalTtl>
                         <S.ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
-                          
                             {isSignUp && (
-
                                 <BaseInput                                  
                                     type="text"
                                     name="name"
@@ -229,7 +202,6 @@ function AuthForm() {
                                 <S.ErrorMessage>{formError}</S.ErrorMessage>
 
                             )}
-
                             
                             <BaseButton
                                 type="submit"

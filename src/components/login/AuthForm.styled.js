@@ -139,9 +139,7 @@ export const ModalFormGroup = styled.div`
     }
 `
 
-
 export const ErrorMessage = styled.p`
     color: red;
     font-size: 0.8em;
 `
-
