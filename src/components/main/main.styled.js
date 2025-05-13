@@ -13,7 +13,6 @@ export const H2 = styled.h2`
     font-size: 32px;
     line-height: 150%;
     letter-spacing: 0px;
-    padding-top: 20px;
 `
 
 export const ContentContainer = styled.div`

@@ -14,7 +14,6 @@ import { cleanUserData } from '../../services/auth'
 import { Link, useLocation } from 'react-router-dom'
 
 function Header() {
-
     const location = useLocation()   
     const excludedPaths = ['/', '/signin', '/signup']
     const userInfo = localStorage.getItem('userInfo')
@@ -22,7 +21,6 @@ function Header() {
     const isMyExpensesActive = location.pathname === '/my-expenses'
     const isExpenseAnalysisActive = location.pathname === '/expense-analysis'
     const showButtons = isAuthenticated && !excludedPaths.includes(location.pathname)
-
 
     return (
         <HeaderContainer>
@@ -34,19 +32,15 @@ function Header() {
                     <HeaderButtons>
                         <HeaderCenter>
                             <Link to="/my-expenses">
-
                                 <HeaderButton $active={isMyExpensesActive}>Мои расходы</HeaderButton>
                             </Link>
                             <Link to="/expense-analysis">
                                 <HeaderButton $active={isExpenseAnalysisActive}>Анализ расходов</HeaderButton>
-
                             </Link>
                         </HeaderCenter>
                         <HeaderRight>
-                            <Link to="/">
-                                <LogoutButton onClick={cleanUserData}>
-                                    Выйти
-                                </LogoutButton>
+                            <Link to="/log-out">
+                                <LogoutButton onClick={cleanUserData}>Выйти</LogoutButton>
                             </Link>
                         </HeaderRight>
                     </HeaderButtons>
@@ -55,4 +49,5 @@ function Header() {
         </HeaderContainer>
     )
 }
+
 export default Header

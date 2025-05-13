@@ -13,7 +13,6 @@ export const H2 = styled.h2`
     font-size: 32px;
     line-height: 150%;
     letter-spacing: 0px;
-
 `
 
 export const ContentContainer = styled.div`
@@ -168,7 +167,6 @@ export const Day = styled.div`
     }
 `
 
-
 export const MonthHeader = styled.div`
     grid-column: 1 / -1;
     font-weight: 600;
@@ -176,7 +174,6 @@ export const MonthHeader = styled.div`
     text-align: left;
     padding: 10px 0;
     color: #000;
-
 `
 
 export const Placeholder = styled.div`

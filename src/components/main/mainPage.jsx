@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 // import { filterExpenses, sortExpenses } from '../../utils/expenseUtils';
 import FoodIcon from '../icons/FoodIcon';
@@ -129,4 +128,3 @@ function MainPage() {
 }
 
 export default MainPage;
-
