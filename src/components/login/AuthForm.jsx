@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+
 import * as S from './AuthForm.styled'
 import { BaseInput, BaseButton } from '../ BaseInput/BaseInput'
 import { signIn, signUp } from '../../services/auth'
+
 
 function AuthForm() {
     const navigate = useNavigate()
@@ -134,6 +136,8 @@ function AuthForm() {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            setIsButtonDisabled(true)
+            setFormError('Пожалуйста, исправьте ошибки в форме.')
             return;
         }
 
@@ -146,7 +150,9 @@ function AuthForm() {
                 token: response.token,
                 user: response
             }));
-
+            setErrors({})
+            setFormError('')
+            setIsButtonDisabled(false)
             navigate('/my-expenses');
         } catch (error) {
             setFormError(error.message);
@@ -173,74 +179,57 @@ function AuthForm() {
                         <S.ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
                           
                             {isSignUp && (
-  <S.InputWrapper>
-    <BaseInput
-      type="text"
-      name="name"
-      id="formname"
-      placeholder="Имя"
-      value={formData.name}
-      onChange={handleChange}
-      $isValid={!formSubmitted && fieldValid.name}
-      $isInvalid={formSubmitted && !fieldValid.name}
-    />
-    <S.RequiredStar 
-      $visible={formSubmitted && !fieldValid.name}
-      $hasValue={!!formData.name}
-    >
-      *
-    </S.RequiredStar>
-  </S.InputWrapper>
-)}
 
-<S.InputWrapper>
-  <BaseInput
-    type="text"
-    name="login"
-    placeholder="Эл. почта"
-    value={formData.login}
-    onChange={handleChange}
-    $isValid={fieldValid.login}
-    $isInvalid={!fieldValid.login && (formSubmitted || fieldTouched.login)}
-  />
-  <S.RequiredStar 
-    $visible={formSubmitted && !fieldValid.login}
-  >
-    *
-  </S.RequiredStar>
-</S.InputWrapper>
-
-<S.InputWrapper>
-  <BaseInput
-    type="password"
-    name="password"
-    id="formpassword"
-    placeholder="Пароль"
-    value={formData.password}
-    onChange={handleChange}
-    $isValid={!formSubmitted && fieldValid.password}
-    $isInvalid={formSubmitted && !fieldValid.password}
-  />
-  <S.RequiredStar 
-    $visible={formSubmitted && !fieldValid.password}
-    $hasValue={!!formData.password}
-  >
-    *
-  </S.RequiredStar>
-</S.InputWrapper>
+                                <BaseInput                                  
+                                    type="text"
+                                    name="name"
+                                    id="formname"
+                                    placeholder="Имя"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    $isValid={fieldTouched.name && !errors.name}
+                                    $isInvalid={fieldTouched.name && errors.name}
+                                />
+                            )}
+                            <BaseInput
+                                type="text"
+                                name="login"
+                                id="formlogin"
+                                placeholder="Эл. почта"
+                                value={formData.login}
+                                onChange={handleChange}
+                                autoComplete="email"
+                                $isValid={fieldTouched.login && !errors.login}
+                                $isInvalid={fieldTouched.login && errors.login}
+                            />
+                            <BaseInput                               
+                                type="password"
+                                name="password"
+                                id="formpassword"
+                                placeholder="Пароль"
+                                value={formData.password}
+                                onChange={handleChange}
+                                autoComplete="current-password"
+                                $isValid={fieldTouched.password && !errors.password}
+                                $isInvalid={fieldTouched.password && errors.password}
+                            />
                             
-                            {/* Блок для отображения всех ошибок */}
-                            {(formSubmitted && Object.values(errors).some(error => error) || formError) && (
-  <S.ErrorBlock>
-    {Object.entries(errors).map(([field, error]) => {
-      if (!isSignUp && field === 'name') return null;
-      return formSubmitted && error && (
-        <S.ErrorMessage key={field}>{error}</S.ErrorMessage>
-      )
-    })}
-    {formError && <S.ErrorMessage>{formError}</S.ErrorMessage>}
-  </S.ErrorBlock>
-)}
+                            {errors.name && fieldTouched.name && (
+
+                                <S.ErrorMessage>{errors.name}</S.ErrorMessage>
+                            )}
+
+                            {errors.login && fieldTouched.login && (
+                                <S.ErrorMessage>{errors.login}</S.ErrorMessage>
+                            )}
+                            {errors.password && fieldTouched.password && (
+                                <S.ErrorMessage>{errors.password}</S.ErrorMessage>
+                            )}
+                            {formError && (
+                                <S.ErrorMessage>{formError}</S.ErrorMessage>
+
+                            )}
+
                             
                             <BaseButton
                                 type="submit"

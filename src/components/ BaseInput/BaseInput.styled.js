@@ -9,27 +9,45 @@ export const Container = styled.div`
 `
 
 export const Input = styled.input`
-    width: 100%;
-    padding: 8px 30px 8px 10px; 
-    border: 0.5px solid;
-    border-color: ${({ $isInvalid, $isValid }) => 
-        $isInvalid ? '#F84D4D' : 
-        $isValid ? '#1FA46C' : '#C4C4C4'};
-    background-color: ${({ $isInvalid, $isValid }) => 
-        $isInvalid ? '#FFEBEB' : 
-        $isValid ? '#DBFFE9' : 'transparent'};
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
 
+   padding: 10px;
+    border-radius: 6px;
+    border: 0.5px solid #999999;
+    font-family: Montserrat;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    vertical-align: middle;
     &:focus {
-        border-color: ${({ $isInvalid }) => ($isInvalid ? '#F84D4D' : '#3b82f6')};
-        box-shadow: ${({ $isInvalid }) => ($isInvalid ? '0 0 4px #F84D4D' : '0 0 4px #3b82f6')};
+        outline: none;
+        border-color: #2d2b2b;
     }
-`;
+
+    &::placeholder {
+        color: #999999;
+    }
+    ${(props) =>
+        props.$isValid &&
+        `
+    background-color: #DBFFE9;
+    outline: none; 
+    box-shadow: 0 0 5px green; 
+  `}
+
+    ${(props) =>
+        props.$isInvalid &&
+        `
+    background-color: #FFEBEB;
+    outline: none;
+    box-shadow: 0 0 5px #F25050;
+  `}
+`
+
+
 
 export const Button = styled.button`
-     padding: 10px 20px;
+    padding: 10px 20px;
     height: 39px;
     color: #fff;
   border:none;
