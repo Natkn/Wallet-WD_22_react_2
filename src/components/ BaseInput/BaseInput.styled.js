@@ -9,7 +9,6 @@ export const Container = styled.div`
 `
 
 export const Input = styled.input`
-
    padding: 10px;
     border-radius: 6px;
     border: 0.5px solid #999999;
@@ -45,12 +44,11 @@ export const Input = styled.input`
 `
 
 
-
 export const Button = styled.button`
     padding: 10px 20px;
     height: 39px;
     color: #fff;
-  border:none;
+    border: none;
     border-radius: 4px;
     margin-top: 16px;
     margin-bottom: 14px;
@@ -72,12 +70,6 @@ export const Button = styled.button`
         background-color: #999999;
         cursor: not-allowed;
     }
-    &::placeholder {
-        &::after {
-            content: ' *';
-            color: #F84D4D;
-    }
-  }
 `
 
 export const Text = styled.p`
