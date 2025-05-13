@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+
 import * as S from './AuthForm.styled'
 import { BaseInput, BaseButton } from '../ BaseInput/BaseInput'
 import { signIn, signUp } from '../../services/auth'
+
 
 function AuthForm() {
     const navigate = useNavigate()
@@ -186,6 +188,7 @@ function AuthForm() {
                             />
                             
                             {errors.name && fieldTouched.name && (
+
                                 <S.ErrorMessage>{errors.name}</S.ErrorMessage>
                             )}
 
@@ -197,6 +200,7 @@ function AuthForm() {
                             )}
                             {formError && (
                                 <S.ErrorMessage>{formError}</S.ErrorMessage>
+
                             )}
                             
                             <BaseButton

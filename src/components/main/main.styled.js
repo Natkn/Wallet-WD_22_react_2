@@ -28,6 +28,7 @@ export const ExpensesTableContainer = styled.div`
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 32px;
+    overflow-x: auto; /* Добавляем горизонтальную прокрутку */
 `
 
 export const NewExpenseContainer = styled.div`
@@ -55,14 +56,11 @@ export const H3 = styled.h3`
     vertical-align: middle;
 `
 
-export const FiltersContainer = styled.div`
+export const FiltersRow = styled.div`
     display: flex;
-    gap: 16px;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 150%;
-    letter-spacing: 0px;
-    vertical-align: middle;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
 `
 
 export const FilterWrapper = styled.div`
@@ -74,7 +72,7 @@ export const FilterButton = styled.button`
     background: none;
     border: none;
     padding: 0;
-    display: block;
+    display: flex;
     align-items: center;
     gap: 8px;
     font-weight: 400;
@@ -129,15 +127,23 @@ export const DropdownItem = styled.div`
         img,
         svg {
             filter: brightness(0) saturate(100%) invert(39%) sepia(70%)
-                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%); // Преобразование цвета изображения при наведении
+                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%);
         }
     }
+`
+
+export const DropdownArrow = styled.img`
+    margin-left: 8px;
+    height: 7px;
+    transition: transform 0.3s ease;
+    transform: ${({ isOpen }) => (isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
 `
 
 export const Table = styled.table`
     width: 100%;
     border-collapse: collapse;
     position: relative;
+    table-layout: auto; /* Позволяет столбцам адаптироваться */
 `
 
 export const TableHead = styled.thead`
@@ -154,20 +160,29 @@ export const TableHeaderCell = styled.th`
     line-height: 100%;
     letter-spacing: 0px;
     vertical-align: middle;
+    white-space: nowrap; /* Предотвращаем перенос текста */
 
     &:first-child {
         padding-left: 0;
+        min-width: 150px; /* Минимальная ширина для "Описание" */
     }
 
     &:last-child {
         padding-right: 108px;
+        width: 40px; /* Фиксированная ширина для кнопки редактирования */
     }
 
     &:nth-child(2) {
         padding-right: 30px;
+        min-width: 120px; /* Минимальная ширина для "Категория" */
     }
+
     &:nth-child(3) {
-        width: 170px;
+        min-width: 100px; /* Уменьшаем ширину для "Дата" */
+    }
+
+    &:nth-child(4) {
+        min-width: 100px; /* Минимальная ширина для "Сумма" */
     }
 `
 
@@ -184,24 +199,46 @@ export const TableRow = styled.tr`
 
 export const TableCell = styled.td`
     padding-top: 14px;
+    white-space: nowrap; /* Предотвращаем перенос текста */
 
     &:first-child {
         padding-left: 0;
         padding-right: 10px;
+        min-width: 150px;
     }
 
     &:last-child {
         padding-right: 12px;
+        width: 40px;
+    }
+
+    &:nth-child(2) {
+        min-width: 120px;
     }
 
     &:nth-child(3) {
-        width: 170px;
+        min-width: 100px;
+    }
+
+    &:nth-child(4) {
+        min-width: 100px;
     }
 
     &:nth-child(5) {
-        width: 12px;
         padding-left: 82px;
     }
+`
+
+export const EditButton = styled.button`
+    border: none;
+    background: none;
+    padding: 0 8px;
+    cursor: pointer;
+`
+
+export const EditIcon = styled.img`
+    width: 12px;
+    height: 12px;
 `
 
 export const NewExpenseTitle = styled.h2`
@@ -220,6 +257,10 @@ export const InputLabel = styled.label`
     letter-spacing: 0px;
 `
 
+export const ErrorStar = styled.span`
+    color: red;
+`
+
 export const InputField = styled.input`
     width: 100%;
     padding: 12px;
@@ -236,6 +277,27 @@ export const InputField = styled.input`
         border-color: #1fa46c;
         outline: none;
     }
+
+    ${({ $hasError }) =>
+        $hasError &&
+        `
+        border-color: red;
+        background-color: #FFF5F5;
+    `}
+
+    ${({ $hasValue }) =>
+        $hasValue &&
+        `
+        border-color: #1FA46C;
+        background-color: #DBFFE9;
+    `}
+
+    ${({ $isValid }) =>
+        $isValid &&
+        `
+        border-color: #1FA46C;
+        background-color: #DBFFE9;
+    `}
 `
 
 export const CategoryButtonsContainer = styled.div`
@@ -248,10 +310,7 @@ export const CategoryButtonsContainer = styled.div`
 export const CategoryButton = styled.button`
     border: none;
     border-radius: 30px;
-    padding-top: 8px;
-    padding-right: 20px;
-    padding-bottom: 8px;
-    padding-left: 20px;
+    padding: 8px 20px;
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -271,7 +330,7 @@ export const CategoryButton = styled.button`
         img,
         svg {
             filter: brightness(0) saturate(100%) invert(39%) sepia(70%)
-                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%); // Преобразование цвета изображения при наведении
+                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%);
         }
     }
 
@@ -282,9 +341,14 @@ export const CategoryButton = styled.button`
         img,
         svg {
             filter: brightness(0) saturate(100%) invert(39%) sepia(70%)
-                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%); // Преобразование цвета изображения при наведении
+                saturate(2756%) hue-rotate(88deg) brightness(97%) contrast(99%);
         }
     }
+`
+
+export const CategoryIcon = styled.img`
+    width: 14px;
+    height: 14px;
 `
 
 export const AddExpenseButton = styled.button`
@@ -312,4 +376,45 @@ export const AddExpenseButton = styled.button`
     &:hover {
         background-color: #147049;
     }
+`
+
+export const ButtonContainer = styled.div`
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+`
+
+export const CancelButton = styled.button`
+    background-color: #999999;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 313px;
+    height: 39px;
+    border-radius: 6px;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 100%;
+    text-align: center;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: #777777;
+    }
+`
+
+export const DeleteButton = styled.button`
+    border: none;
+    background: none;
+    padding: 0 8px;
+    cursor: pointer;
+`
+
+export const DeleteIcon = styled.img`
+    width: 12px;
+    height: 12px;
 `
