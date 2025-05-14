@@ -83,7 +83,7 @@ const MainLayout = ({
             onEdit={handleEditExpense}
             editMode={editMode}
             editingExpenseIndex={editingExpenseIndex}
-            // onDelete={handleDelete}
+            onDelete={onDelete}
           />
         ) : (
           <S.Table>
