@@ -75,6 +75,6 @@ export const getTransactionsByPeriod = async (start, end) => {
 
 // Форматирование даты в MM-DD-YYYY
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
+  const [day, month, year] = dateString.split('.');
+  return `${month}-${day}-${year}`;
 };

@@ -3,6 +3,7 @@ import ExpensesTable from './ExpensesTable';
 import ExpenseForm from './ExpenseForm';
 import * as S from './main.styled';
 
+
 const MainLayout = ({
   sortedExpenses,
   newDescription,
@@ -32,6 +33,7 @@ const MainLayout = ({
   handleCategorySelect,
   handleSortSelect,
   sortOptions,
+  onDelete,
 }) => (
   <S.MainBlock>
     <S.H2>Мои расходы</S.H2>
@@ -81,6 +83,7 @@ const MainLayout = ({
             onEdit={handleEditExpense}
             editMode={editMode}
             editingExpenseIndex={editingExpenseIndex}
+            // onDelete={handleDelete}
           />
         ) : (
           <S.Table>
@@ -124,6 +127,7 @@ const MainLayout = ({
 );
 
 MainLayout.propTypes = {
+  onDelete: PropTypes.func.isRequired,
   sortedExpenses: PropTypes.arrayOf(
     PropTypes.shape({
       description: PropTypes.string.isRequired,
