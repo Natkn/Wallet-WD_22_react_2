@@ -32,7 +32,18 @@ function MainPage() {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const handleSubmit = async (transactionData, id) => {
+    try {
+      if (id) {
+        await updateTransaction(id, transactionData);
+      } else {
+        await createTransaction(transactionData);
+      }
+      await loadTransactions();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
   const {
     newDescription,
     setNewDescription,
@@ -47,16 +58,17 @@ function MainPage() {
     dateError,
     amountError,
     editMode,
+    setEditMode, 
     editingExpenseIndex,
     handleDescriptionChange,
     handleDateChange,
     handleAmountChange,
     handleEditExpense,
-    handleAddExpense: localHandleAddExpense,
-  } = useExpenseForm(expenses, setExpenses);
+  } = useExpenseForm(expenses, setExpenses, handleSubmit);
 
   const categories = ['Еда', 'Транспорт', 'Жильё', 'Развлечения', 'Образование', 'Другое'];
   const sortOptions = ['Дата', 'Сумма'];
+ 
 
   // Загрузка транзакций с сервера
   const loadTransactions = async () => {
@@ -70,7 +82,8 @@ function MainPage() {
       const formattedData = data.map(transaction => ({
         ...transaction,
         category: REVERSE_CATEGORY_MAPPING[transaction.category],
-        date: new Date(transaction.date).toLocaleDateString('ru-RU'),
+        date: new Date(transaction.date)
+          .toLocaleDateString('ru-RU', { timeZone: 'UTC' }), // Фикс часового пояса
         amount: `${transaction.sum} ₽`
       }));
       setExpenses(formattedData);
@@ -100,9 +113,14 @@ function MainPage() {
       } else {
         await createTransaction(transactionData);
       }
+      setNewDescription('');
+      setNewCategory('');
+      setNewDate('');
+      setNewAmount('');
+      setEditMode(false);
       
       await loadTransactions();
-      localHandleAddExpense();
+     
     } catch (error) {
       console.error('Ошибка сохранения транзакции:', error);
     }
@@ -171,18 +189,7 @@ function MainPage() {
       }
     });
   }
-  const handleSubmit = async (transactionData, id) => {
-    try {
-      if (id) {
-        await updateTransaction(id, transactionData);
-      } else {
-        await createTransaction(transactionData);
-      }
-      await loadTransactions();
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
+  
 
   return (
     <MainLayout

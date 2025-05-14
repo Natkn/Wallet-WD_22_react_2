@@ -9,7 +9,7 @@ const CATEGORY_MAPPING = {
   'Образование': 'education',
   'Другое': 'others'
 };
-export const useExpenseForm = (expenses, setExpenses) => {
+export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
   const [newDescription, setNewDescription] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [newDate, setNewDate] = useState('');
@@ -72,7 +72,7 @@ export const useExpenseForm = (expenses, setExpenses) => {
   const prepareTransactionData = () => ({
     description: newDescription,
     category: CATEGORY_MAPPING[newCategory],
-    date: newDate.split('.').reverse().join('-'), // Конвертация в ISO формат
+    date: newDate.split('.').reverse().join('-'),
     sum: parseFloat(newAmount.replace(/\s/g, ''))
   });
 
@@ -81,17 +81,19 @@ export const useExpenseForm = (expenses, setExpenses) => {
     setNewCategory('');
     setNewDate('');
     setNewAmount('');
-    setEditMode(false);
+    
     setEditingId(null);
     setErrors({ description: false, category: false, date: false, amount: false });
+    
   };
-  const handleAddExpense = async (onSubmit) => {
+  const handleAddExpense = async () => {
     if (!validateForm()) return;
     
     const transactionData = prepareTransactionData();
     try {
       await onSubmit(transactionData, editingId);
       resetForm();
+      
     } catch (error) {
       console.error('Ошибка сохранения:', error);
     }
@@ -111,12 +113,15 @@ export const useExpenseForm = (expenses, setExpenses) => {
     dateError: errors.date,
     amountError: errors.amount,
     editMode,
+    setEditMode,
     editingExpenseIndex: expenses.findIndex(e => e._id === editingId),
     handleEditExpense,
     handleAddExpense,
     handleDescriptionChange: (e) => setNewDescription(e.target.value),
     handleDateChange: (e) => {
-      let value = e.target.value.replace(/[^0-9.]/g, '');
+      let value = e.target.value
+      .replace(/[^0-9.]/g, '')
+      .replace(/(\..*)\./g, '$1');
       if (value.length === 2 || value.length === 5) {
         if (!value.endsWith('.')) value += '.';
       }
