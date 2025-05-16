@@ -5,7 +5,6 @@ import * as S from './AuthForm.styled'
 import { BaseInput, BaseButton } from '../ BaseInput/BaseInput'
 import { signIn, signUp } from '../../services/auth'
 
-
 function AuthForm() {
     const navigate = useNavigate()
     const [isSignUp, setIsSignUp] = useState(false)
@@ -93,55 +92,52 @@ function AuthForm() {
     }, [errors, fieldValid, isSignUp])
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        // Валидация полей
-        const newErrors = {};
+        e.preventDefault()
+
+        const newErrors = {}
         if (isSignUp && !formData.name.trim()) {
-            newErrors.name = 'Введите имя';
+            newErrors.name = 'Введите имя'
         }
         if (!formData.login.trim()) {
-            newErrors.login = 'Введите логин';
+            newErrors.login = 'Введите логин'
         }
         if (!formData.password.trim()) {
-            newErrors.password = 'Введите пароль';
+            newErrors.password = 'Введите пароль'
         } else if (formData.password.length < 6) {
-            newErrors.password = 'Пароль менее 6 символов';
+            newErrors.password = 'Пароль менее 6 символов'
         }
 
         if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+            setErrors(newErrors)
             setIsButtonDisabled(true)
             setFormError('Пожалуйста, исправьте ошибки в форме.')
-            return;
+            return
         }
 
         try {
-            const response = isSignUp 
+            const response = isSignUp
                 ? await signUp(formData)
-                : await signIn(formData);
+                : await signIn(formData)
 
-            localStorage.setItem('userInfo', JSON.stringify({
-                token: response.token,
-                user: response
-            }));
+            localStorage.setItem(
+                'userInfo',
+                JSON.stringify({
+                    token: response.token,
+                    user: response,
+                })
+            )
             setErrors({})
             setFormError('')
             setIsButtonDisabled(false)
-            navigate('/my-expenses');
+            navigate('/my-expenses')
         } catch (error) {
-            setFormError(error.message);
+            setFormError(error.message)
         }
-    };
+    }
 
     const isValidEmail = (email) => {
         return /\S+@\S+\.\S+/.test(email)
     }
-    // const textBtn= () => {
-    //     return isSignUp ? 'Зарегистрироваться' : 'Войти'
-    // }
-    // const text= textBtn()
-    
 
     return (
         <S.Wrapper>
@@ -151,9 +147,12 @@ function AuthForm() {
                         <S.ModalTtl>
                             <h2>{isSignUp ? 'Регистрация' : 'Вход'}</h2>
                         </S.ModalTtl>
-                        <S.ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
+                        <S.ModalFormLogin
+                            id="formLogIn"
+                            onSubmit={handleSubmit}
+                        >
                             {isSignUp && (
-                                <BaseInput                                  
+                                <BaseInput
                                     type="text"
                                     name="name"
                                     id="formname"
@@ -161,7 +160,9 @@ function AuthForm() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     $isValid={fieldTouched.name && !errors.name}
-                                    $isInvalid={fieldTouched.name && errors.name}
+                                    $isInvalid={
+                                        fieldTouched.name && errors.name
+                                    }
                                 />
                             )}
                             <BaseInput
@@ -175,7 +176,7 @@ function AuthForm() {
                                 $isValid={fieldTouched.login && !errors.login}
                                 $isInvalid={fieldTouched.login && errors.login}
                             />
-                            <BaseInput                               
+                            <BaseInput
                                 type="password"
                                 name="password"
                                 id="formpassword"
@@ -183,12 +184,15 @@ function AuthForm() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 autoComplete="current-password"
-                                $isValid={fieldTouched.password && !errors.password}
-                                $isInvalid={fieldTouched.password && errors.password}
+                                $isValid={
+                                    fieldTouched.password && !errors.password
+                                }
+                                $isInvalid={
+                                    fieldTouched.password && errors.password
+                                }
                             />
-                            
-                            {errors.name && fieldTouched.name && (
 
+                            {errors.name && fieldTouched.name && (
                                 <S.ErrorMessage>{errors.name}</S.ErrorMessage>
                             )}
 
@@ -196,24 +200,22 @@ function AuthForm() {
                                 <S.ErrorMessage>{errors.login}</S.ErrorMessage>
                             )}
                             {errors.password && fieldTouched.password && (
-                                <S.ErrorMessage>{errors.password}</S.ErrorMessage>
+                                <S.ErrorMessage>
+                                    {errors.password}
+                                </S.ErrorMessage>
                             )}
                             {formError && (
                                 <S.ErrorMessage>{formError}</S.ErrorMessage>
-
                             )}
-                            
+
                             <BaseButton
                                 type="submit"
                                 onClick={handleSubmit}
                                 text={isSignUp ? 'Зарегистрироваться' : 'Войти'}
-                                id="btnEnter" 
+                                id="btnEnter"
                                 disabled={isButtonDisabled}
                             />
-                                
-                                
-                          
-                            
+
                             <S.ModalFormGroup>
                                 {isSignUp ? (
                                     <>
