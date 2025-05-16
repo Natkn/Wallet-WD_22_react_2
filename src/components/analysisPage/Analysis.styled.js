@@ -1,17 +1,11 @@
 import styled from 'styled-components'
 
 export const MainBlock = styled.div`
-    height: 100vh;
-    background: #f4f5f6;
-    margin-left: 118px;
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: flex-start;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    background: #f4f5f6;
+    min-height: 100vh;
 `
 
 export const H2 = styled.h2`
@@ -19,31 +13,40 @@ export const H2 = styled.h2`
     font-size: 32px;
     line-height: 150%;
     letter-spacing: 0px;
-    margin-bottom: 32px;
-    padding-top: 20px;
-`
-
-export const MainPageContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 `
 
 export const ContentContainer = styled.div`
     display: flex;
+    margin-top: 32px;
+    gap: 36px;
+    flex-direction: row;
+`
+
+export const ExpensesTableContainer = styled.div`
+    width: 789px;
+    border-radius: 30px;
+    background-color: #fff;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    height: 540px;
 `
 
 export const NewExpenseContainer = styled.div`
-    display: flex;
-    flex-direction: column;
     width: 379px;
-    height: 542px;
-    padding: 32px;
-    border-radius: 8px;
-    background-color: #fff;
     border-radius: 30px;
+    background-color: #fff;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+ feature-env
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    height: 540px;
+
     margin-right: 32px;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -67,20 +70,25 @@ export const NewExpenseContainer = styled.div`
 
     scrollbar-width: thin;
     scrollbar-color: #d9d9d9 transparent;
+
 `
 
-export const NewExpenseTitle = styled.h2`
-    font-size: 1.5em;
-    margin-bottom: 10px;
+export const NewExpenseTitle = styled.h3`
+    margin-bottom: 26px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0px;
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
     justify-content: space-between;
-    align-content: center;
+    align-items: center;
 `
 
 export const PeriodElements = styled.div`
     display: flex;
+
+    gap: 8px;
+
     gap: 12px;
     margin-top: 8px;
 `
@@ -114,104 +122,109 @@ export const CategoryButtonsContainer = styled.div`
     margin-bottom: 10px;
 `
 
-export const AddExpenseButton = styled.button`
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 15px;
+export const PeriodElement = styled.button`
     border: none;
-    border-radius: 4px;
+    background: none;
+    font-size: 12px;
     cursor: pointer;
+    font-weight: ${({ $active }) => ($active ? 600 : 400)};
+    color: ${({ $active }) => ($active ? '#1FA46C' : '#000')};
+    text-decoration: ${({ $active }) => ($active ? 'underline' : 'none')};
 
     &:hover {
-        background-color: #3e8e41;
+        color: #1FA46C;
+        font-weight: 600;
+        text-decoration: none;
     }
 `
 
 export const CalendarContainer = styled.div`
-    width: 100%;
-    border-radius: 8px;
-    margin-top: 10px;
-    box-sizing: border-box;
-`
-
-export const CalendarHeader = styled.div`
+    position: relative;
+    flex-grow: 1;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-direction: column;
+    min-height: 0;
 `
 
-export const CalendarTitle = styled.h3`
+export const CalendarTitle = styled.div`
     font-weight: 600;
     font-size: 16px;
-    line-height: 100%;
-    letter-spacing: 0px;
-    margin-bottom: 12px;
-`
-
-export const CalendarControls = styled.div`
-    display: flex;
-    gap: 10px;
-`
-
-export const CalendarButton = styled.button`
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-
-    &:hover {
-        background-color: #ddd;
-    }
+    text-align: center;
+    margin: 10px 0;
 `
 
 export const DaysOfWeek = styled.div`
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 12px;
     color: #999999;
-    border-bottom: 1px solid #999999;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
 `
 
 export const DayOfWeek = styled.div`
-    margin-bottom: 6px;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 100%;
+    flex: 1;
     text-align: center;
-    vertical-align: middle;
 `
 
 export const CalendarGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    margin-bottom: 24px;
+    gap: 5px;
+    flex-grow: 1;
+    height: 472px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    -webkit-overflow-scrolling: auto;
+    overflow-y: overlay;
+    scrollbar-width: thin;
+    scrollbar-color: #D9D9D9 transparent;
+    &::-webkit-scrollbar {
+        width: 6px !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #D9D9D9 !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-button {
+        display: none !important;
+    }
 `
 
 export const Day = styled.div`
     width: 40px;
     height: 40px;
-    border-radius: 60px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    text-align: center;
+    justify-content: center;
     cursor: pointer;
-    background-color: #f4f5f6;
-    border: 1px solid #eee;
-    box-sizing: border-box;
+    border-radius: 50%;
     font-weight: 400;
     font-size: 12px;
     line-height: 100%;
     letter-spacing: 0%;
+    text-align: center;
+    vertical-align: middle;
+
+    background: ${({ $selected }) => ($selected ? '#DBFFE9' : '#F4F5F6')};
+    color: ${({ $today }) => ($today ? '#1FA46C' : '#000')};
+
 
     &:hover {
-        background-color: #dbffe9;
-    }
-
+        background: #DBFFE9;
+        color: #1FA46C;
+=
     &.selected {
         background-color: #dbffe9;
         color: #1fa46c;
@@ -219,157 +232,112 @@ export const Day = styled.div`
 
     &.today {
         background-color: #9cea9fa6;
+
     }
 `
 
-export const ExpensesTableContainer = styled.div`
-    width: 789px;
-    height: 540px;
-    top: 100px;
+export const MonthHeader = styled.div`
+    grid-column: 1 / -1;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: left;
+    padding: 10px 0;
+    color: #000;
+`
+
+export const Placeholder = styled.div`
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+
+export const MonthList = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+    height: 504px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    -webkit-overflow-scrolling: auto;
+    overflow-y: overlay;
+    scrollbar-width: thin;
+    scrollbar-color: #D9D9D9 transparent;
+    &::-webkit-scrollbar {
+        width: 6px !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #D9D9D9 !important;
+        border-radius: 30px !important;
+    }
+    &::-webkit-scrollbar-button {
+        display: none !important;
+    }
+`
+
+export const YearHeader = styled.div`
+    font-weight: 600;
+    font-size: 16px;
+    text-align: left;
+    padding: 10px 0;
+    color: #000;
+`
+
+export const MonthGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+`
+
+export const Month = styled.div`
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
     border-radius: 30px;
-    background-color: #fff;
-    position: relative;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    vertical-align: middle;
+
+    background: ${({ $selected }) => ($selected ? '#DBFFE9' : '#F4F5F6')};
+    color: ${({ $today }) => ($today ? '#1FA46C' : '#000')};
+
+    &:hover {
+        background: #DBFFE9;
+        color: #1FA46C;
+    }
 `
 
 export const TableHeader = styled.div`
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 20px;
-    margin-top: 32px;
 `
+
 export const H3 = styled.h3`
     font-weight: 700;
     font-size: 24px;
     line-height: 100%;
     letter-spacing: 0px;
     vertical-align: middle;
-    margin-left: 32px;
 `
+
+
 export const FiltersContainer = styled.div`
-    display: flex;
-    gap: 22px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    margin-left: 32px;
-    font-weight: 400;
     font-size: 12px;
-    line-height: 100%;
-    letter-spacing: 0px;
-    vertical-align: middle;
     color: #999999;
-`
-
-export const Table = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    position: relative;
-`
-
-export const TableHead = styled.thead`
-    color: #999999;
-    border-bottom: 1px solid #ddd;
-`
-
-export const TableHeaderCell = styled.th`
-    padding-top: 6px;
-    padding-bottom: 6px;
-    text-align: left;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 100%;
-    letter-spacing: 0px;
-    vertical-align: middle;
-
-    &:first-child {
-        padding-left: 32px;
-    }
-
-    &:last-child {
-        padding-right: 108px;
-    }
-
-    &:nth-child(2) {
-        padding-right: 30px;
-    }
-    &:nth-child(3) {
-        width: 170px;
-    }
-`
-
-export const TableRow = styled.tr`
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 100%;
-    letter-spacing: 0px;
-    vertical-align: middle;
-`
-
-export const TableCell = styled.td`
-    padding-top: 20px;
-
-    &:first-child {
-        padding-left: 32px;
-        padding-right: 10px;
-    }
-
-    &:last-child {
-        padding-right: 12px;
-    }
-
-    &:nth-child(3) {
-        width: 170px;
-    }
-
-    &:nth-child(5) {
-        width: 12px;
-        padding-left: 82px;
-    }
-`
-
-export const InputField = styled.input`
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 22px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 100%;
-    letter-spacing: 0px;
-    vertical-align: middle;
-
-    &:focus {
-        border-color: #1fa46c;
-        outline: none;
-    }
-`
-
-export const CategoryButton = styled.button`
-    background-color: #eee;
-    border: none;
-    border-radius: 30px;
-    padding-top: 8px;
-    padding-right: 20px;
-    padding-bottom: 8px;
-    padding-left: 20px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 100%;
-    text-align: center;
-    vertical-align: middle;
-
-    &:hover {
-        background-color: #ddd;
-    }
 `
 
 export const YearContainer = styled.div`
@@ -413,3 +381,4 @@ export const MonthName = styled.div`
         color: #1fa46c;
     }
 `
+
