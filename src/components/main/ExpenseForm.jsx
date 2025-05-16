@@ -1,3 +1,4 @@
+// ExpenseForm.jsx
 import PropTypes from 'prop-types'
 import * as S from './main.styled'
 
@@ -35,6 +36,8 @@ const ExpenseForm = ({
             placeholder="Введите описание"
             value={newDescription}
             onChange={handleDescriptionChange}
+            $descriptionerror={descriptionError}
+            $newdescription={newDescription}
         />
         <S.InputLabel>
             {errors.category && <S.ErrorStar>*</S.ErrorStar>} Категория:
@@ -52,13 +55,16 @@ const ExpenseForm = ({
             ))}
         </S.CategoryButtonsContainer>
         <S.InputLabel htmlFor="date">
-            {(errors.date || dateError) && <S.ErrorStar>*</S.ErrorStar>} Дата:
+            {(errors.date || dateError) && <S.ErrorStar>*</S.ErrorStar>}
+            Дата:
         </S.InputLabel>
         <S.InputField
             id="date"
             placeholder="дд.мм.гггг"
             value={newDate}
             onChange={handleDateChange}
+            $dateerror={dateError}
+            $newdate={newDate}
         />
         <S.InputLabel htmlFor="amount">
             {(errors.amount || amountError) && <S.ErrorStar>*</S.ErrorStar>}{' '}
@@ -69,7 +75,10 @@ const ExpenseForm = ({
             placeholder="Введите сумму"
             value={newAmount}
             onChange={handleAmountChange}
+            $amounterror={amountError}
+            $newamount={newAmount}
         />
+
         <S.AddExpenseButton onClick={handleAddExpense}>
             {editMode ? 'Сохранить редактирование' : 'Добавить новый расход'}
         </S.AddExpenseButton>

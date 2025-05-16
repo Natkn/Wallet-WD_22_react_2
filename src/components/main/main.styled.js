@@ -276,30 +276,67 @@ export const InputField = styled.input`
     vertical-align: middle;
 
     &:focus {
-        border-color: #1fa46c;
         outline: none;
     }
+    border-color: ${({
+        $descriptionerror,
+        $dateerror,
+        $amounterror,
+        $newdate,
+        $newamount,
+        $errors = {},
+        $newdescription,
+    }) => {
+        if ($descriptionerror || $errors.description) {
+            return 'red'
+        }
+        if ($dateerror || $errors.date) {
+            return 'red'
+        }
+        if ($amounterror || $errors.amount) {
+            return 'red'
+        }
+        if ($newdescription) {
+            return '#1FA46C'
+        }
+        if ($newdate) {
+            return '#1FA46C'
+        }
+        if ($newamount) {
+            return '#1FA46C'
+        }
+        return '#999999'
+    }};
 
-    ${({ $hasError }) =>
-        $hasError &&
-        `
-        border-color: red;
-        background-color: #FFF5F5;
-    `}
-
-    ${({ $hasValue }) =>
-        $hasValue &&
-        `
-        border-color: #1FA46C;
-        background-color: #DBFFE9;
-    `}
-
-    ${({ $isValid }) =>
-        $isValid &&
-        `
-        border-color: #1FA46C;
-        background-color: #DBFFE9;
-    `}
+    background-color: ${({
+        $descriptionerror,
+        $dateerror,
+        $amounterror,
+        $newdate,
+        $newamount,
+        $errors = {},
+        $newdescription,
+    }) => {
+        if ($descriptionerror || $errors.description) {
+            return '#FFF5F5'
+        }
+        if ($dateerror || $errors.date) {
+            return '#FFF5F5'
+        }
+        if ($amounterror || $errors.amount) {
+            return '#FFF5F5'
+        }
+        if ($newdescription) {
+            return '#DBFFE9'
+        }
+        if ($newdate) {
+            return '#DBFFE9'
+        }
+        if ($newamount) {
+            return '#DBFFE9'
+        }
+        return '#FFFFFF'
+    }};
 `
 
 export const CategoryButtonsContainer = styled.div`
