@@ -211,6 +211,11 @@ export const Day = styled.div`
         background-color: #dbffe9;
     }
 
+    &.selected {
+        background-color: #dbffe9;
+        color: #1fa46c;
+    }
+
     &.today {
         background-color: #9cea9fa6;
     }
@@ -401,4 +406,9 @@ export const MonthName = styled.div`
     font-weight: 400;
     font-size: 12px;
     line-height: 100%;
+
+    &.selected {
+        background-color: #dbffe9;
+        color: #1fa46c;
+    }
 `
