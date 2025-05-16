@@ -1,14 +1,15 @@
-import Header from '../src/components/header/Header'
-import MainPage from './components/main/mainPage'
-import { GlobalStyles } from '../src/assests/GlobalStyles'
+import Header from './components/header/Header'
+import AppRoutes from './AppRoutes'
+import { BrowserRouter } from 'react-router-dom'
+import { GlobalStyles } from './assests/GlobalStyles'
 
 function App() {
     return (
-        <>
+        <BrowserRouter>
             <GlobalStyles />
             <Header />
-            <MainPage />
-        </>
+            <AppRoutes />
+        </BrowserRouter>
     )
 }
 
