@@ -391,10 +391,15 @@ export const CategoryIcon = styled.img`
 `
 
 export const AddExpenseButton = styled.button`
-    background-color: #1fa46c;
+    background-color: ${(props) =>
+        props.$initialGreen
+            ? '#1fa46c'
+            : props.$isbuttonvalid
+            ? '#1fa46c'
+            : '#999999'};
+    cursor: ${(props) => (props.$isbuttonvalid ? 'pointer' : 'not-allowed')};
     color: white;
     border: none;
-    cursor: pointer;
     font-size: 1em;
     width: 313px;
     height: 39px;
@@ -413,7 +418,8 @@ export const AddExpenseButton = styled.button`
     justify-content: center;
 
     &:hover {
-        background-color: #147049;
+        background-color: ${(props) =>
+            props.$isbuttonvalid ? '#147049' : '#7b7878'};
     }
 `
 
