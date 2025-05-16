@@ -1,5 +1,5 @@
 import * as S from './Analysis.styled'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
     format,
     startOfMonth,
@@ -8,223 +8,330 @@ import {
     isSameDay,
     isToday,
     getYear,
-    startOfYear,
-    endOfYear,
-    eachMonthOfInterval,
-    getMonth,
-    getDay,
+    addMonths,
+    isWithinInterval,
+    differenceInDays,
+    differenceInWeeks,
 } from 'date-fns'
 import { ru } from 'date-fns/locale/ru'
-import ChartComponent from './Diagram'
-import { useExpenses } from '../../ExpenseContext'
+import ChartComponent from '../analysisPage/Diagram'
 
-function AnalysisPage() {
-    const { expenses = [] } = useExpenses() || {}
-    const [currentDate] = useState(new Date(2024, 6, 1))
-    const [selectedStartDate, setSelectedStartDate] = useState(new Date(2024, 6, 1))
-    const [selectedEndDate, setSelectedEndDate] = useState(new Date(2024, 6, 31))
-    const [selectedPeriod, setSelectedPeriod] = useState('Месяц')
+function Analysispage() {
+    const [months, setMonths] = useState([
+        new Date(),
+        addMonths(new Date(), 1),
+        addMonths(new Date(), 2),
+    ])
+    const [selectedRange, setSelectedRange] = useState([null, null])
+    const calendarRef = useRef(null)
+    const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
+    const [activePeriod, setActivePeriod] = useState('month')
+    const [showYearView, setShowYearView] = useState(false)
 
-    const getPeriodRange = () => {
-        if (selectedStartDate && selectedEndDate) {
-            return { start: selectedStartDate, end: selectedEndDate }
+    const loadMoreMonths = () => {
+        setMonths((prevMonths) => {
+            const lastMonth = prevMonths[prevMonths.length - 1]
+            return [...prevMonths, addMonths(lastMonth, 1)]
+        })
+    }
+
+    useEffect(() => {
+        const calendarElement = calendarRef.current
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    loadMoreMonths()
+                }
+            },
+            {
+                root: null,
+                rootMargin: '200px',
+                threshold: 0.1,
+            }
+        )
+
+        if (calendarElement) {
+            observer.observe(calendarElement.lastElementChild)
         }
-        return { start: startOfMonth(currentDate), end: endOfMonth(currentDate) }
-    }
 
-    const periodRange = getPeriodRange()
-    
-    const daysOfYear = eachDayOfInterval({ start: startOfYear(currentDate), end: endOfYear(currentDate) })
-    
-    // Генерация списка годов и месяцев с 2000 по 2050
-    const startYear = 2000
-    const endYear = 2050
-    const yearMonthList = []
-    for (let year = startYear; year <= endYear; year++) {
-        const yearDate = new Date(year, 0, 1)
-        yearMonthList.push({ type: 'yearHeader', year })
-        const months = eachMonthOfInterval({ start: yearDate, end: endOfYear(yearDate) })
-        yearMonthList.push({ type: 'monthGrid', months, year })
-    }
+        return () => {
+            if (calendarElement) {
+                observer.unobserve(calendarElement.lastElementChild)
+            }
+        }
+    }, [months])
 
     const handleDayClick = (day) => {
-        if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
-            setSelectedStartDate(day)
-            setSelectedEndDate(null)
-        } else if (selectedStartDate && !selectedEndDate) {
-            if (day < selectedStartDate) {
-                setSelectedEndDate(selectedStartDate)
-                setSelectedStartDate(day)
-            } else {
-                setSelectedEndDate(day)
-            }
+        if (selectedRange[0] === null) {
+            setSelectedRange([day, null])
+        } else if (selectedRange[1] === null && day >= selectedRange[0]) {
+            setSelectedRange([selectedRange[0], day])
+        } else {
+            setSelectedRange([day, null])
         }
     }
 
-    const handleMonthClick = (month) => {
-        if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
-            setSelectedStartDate(month)
-            setSelectedEndDate(null)
-        } else if (selectedStartDate && !selectedEndDate) {
-            if (month < selectedStartDate) {
-                setSelectedEndDate(selectedStartDate)
-                setSelectedStartDate(month)
-            } else {
-                setSelectedEndDate(month)
-            }
+    const isSelected = (day) => {
+        if (selectedRange[0] && selectedRange[1]) {
+            return isWithinInterval(day, {
+                start: selectedRange[0],
+                end: selectedRange[1],
+            })
+        } else if (selectedRange[0]) {
+            return isSameDay(day, selectedRange[0])
         }
-    }
-
-    const isSelectedDay = (day) => {
-        if (!selectedStartDate || !selectedEndDate) return isSameDay(day, selectedStartDate)
-        return day >= selectedStartDate && day <= selectedEndDate
-    }
-
-    const isSelectedMonth = (month) => {
-        if (!selectedStartDate || !selectedEndDate) return isSameDay(month, selectedStartDate)
-        return month >= selectedStartDate && month <= selectedEndDate
+        return false
     }
 
     const isCurrentDay = (day) => {
         return isToday(day)
     }
 
-    const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
+    const renderCalendarMonth = (date) => {
+        const year = getYear(date)
+        const monthName = format(date, 'MMMM', { locale: ru })
 
-    // Фильтрация расходов по выбранному периоду
-    const filteredExpenses = expenses.filter((expense) => {
-        const expenseDate = new Date(expense.date.split('.').reverse().join('-'))
-        return expenseDate >= periodRange.start && expenseDate <= periodRange.end
-    })
+        const startDate = startOfMonth(date)
+        const endDate = endOfMonth(date)
+        const days = eachDayOfInterval({ start: startDate, end: endDate })
 
-    const totalAmount = filteredExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount.replace(' ₽', '').replace(' ', '')), 0)
+        return (
+            <S.CalendarContainer key={date}>
+                <S.CalendarTitle>
+                    {monthName} {year}
+                </S.CalendarTitle>
+                <S.CalendarGrid>
+                    {days.map((day) => (
+                        <S.Day
+                            key={day}
+                            onClick={() => handleDayClick(day)}
+                            className={`${isSelected(day) ? 'selected' : ''} ${
+                                isCurrentDay(day) ? 'today' : ''
+                            }`}
+                        >
+                            {format(day, 'd')}
+                        </S.Day>
+                    ))}
+                </S.CalendarGrid>
+            </S.CalendarContainer>
+        )
+    }
 
-    // Логика для отображения дней года с выравниванием по дням недели
-    let currentMonth = null
-    const calendarDays = []
-    daysOfYear.forEach((day) => {
-        const dayMonth = getMonth(day)
-        if (currentMonth !== dayMonth) {
-            currentMonth = dayMonth
-            calendarDays.push({
-                type: 'monthHeader',
-                month: format(day, 'MMMM', { locale: ru }),
-            })
-            const firstDayOfMonth = getDay(startOfMonth(day))
-            const offset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1
-            for (let i = 0; i < offset; i++) {
-                calendarDays.push({ type: 'placeholder' })
+    const handleYearClick = () => {
+        setShowYearView(!showYearView)
+        setActivePeriod('year')
+    }
+
+    const handleMonthClick = () => {
+        setShowYearView(false)
+        setActivePeriod('month')
+    }
+
+    const renderYearView = () => {
+        const startYear = 2025
+        const endYear = 2100
+        const years = []
+        for (let year = startYear; year <= endYear; year++) {
+            years.push(year)
+        }
+
+        const monthNames = [
+            'Январь',
+            'Февраль',
+            'Март',
+            'Апрель',
+            'Май',
+            'Июнь',
+            'Июль',
+            'Август',
+            'Сентябрь',
+            'Октябрь',
+            'Ноябрь',
+            'Декабрь',
+        ]
+
+        const handleYearMonthClick = (year, monthIndex) => {
+            const monthDate = new Date(year, monthIndex, 1)
+
+            if (!selectedRange.start) {
+                setSelectedRange({ start: monthDate, end: null })
+            } else if (monthDate >= selectedRange.start && !selectedRange.end) {
+                setSelectedRange({ ...selectedRange, end: monthDate })
+            } else if (isSameDay(monthDate, selectedRange.start)) {
+                setSelectedRange({ start: null, end: null })
+            } else if (
+                selectedRange.end &&
+                isSameDay(monthDate, selectedRange.end)
+            ) {
+                setSelectedRange({ start: null, end: null })
+            } else {
+                setSelectedRange({ start: monthDate, end: null })
             }
         }
-        calendarDays.push({
-            type: 'day',
-            day,
-        })
-    })
+
+        const isMonthSelected = (year, monthIndex) => {
+            if (selectedRange.start && selectedRange.end) {
+                const monthDate = new Date(year, monthIndex, 1)
+                return isWithinInterval(monthDate, {
+                    start: selectedRange.start,
+                    end: selectedRange.end,
+                })
+            } else if (selectedRange.start) {
+                const monthDate = new Date(year, monthIndex, 1)
+                return isSameDay(monthDate, selectedRange.start)
+            }
+            return false
+        }
+
+        return (
+            <S.YearContainer>
+                {years.map((year) => (
+                    <div key={year}>
+                        <S.YearTitle>{year}</S.YearTitle>
+                        <S.MonthsContainer>
+                            {monthNames.map((monthName, index) => (
+                                <S.MonthName
+                                    key={`${year}-${index}`}
+                                    onClick={() =>
+                                        handleYearMonthClick(year, index)
+                                    }
+                                    className={`${
+                                        isMonthSelected(year, index)
+                                            ? 'selected'
+                                            : ''
+                                    }`}
+                                >
+                                    {monthName}
+                                </S.MonthName>
+                            ))}
+                        </S.MonthsContainer>
+                    </div>
+                ))}
+            </S.YearContainer>
+        )
+    }
+
+    const formatDateRangeDays = () => {
+        if (selectedRange[0] && selectedRange[1]) {
+            const startDate = selectedRange[0]
+            const endDate = selectedRange[1]
+
+            const daysDifference = differenceInDays(endDate, startDate)
+            const weeksDifference = differenceInWeeks(endDate, startDate)
+
+            if (daysDifference === 0) {
+                return format(startDate, 'd MMMM yyyy', { locale: ru })
+            } else if (daysDifference < 7 && daysDifference > 0) {
+                return `
+          ${format(startDate, 'd MMMM yyyy', { locale: ru })}
+          —
+          ${format(endDate, 'd MMMM yyyy', { locale: ru })}
+        `
+            } else if (weeksDifference >= 1) {
+                const startFormatted = format(startDate, 'd MMMM', {
+                    locale: ru,
+                })
+                const endFormatted = format(endDate, 'd MMMM yyyy', {
+                    locale: ru,
+                })
+                return `
+          ${startFormatted}
+          —
+          ${endFormatted}
+        `
+            } else {
+                return ' Некорректный период'
+            }
+        } else if (selectedRange[0]) {
+            return format(selectedRange[0], ' d MMMM yyyy', { locale: ru })
+        } else {
+            return ''
+        }
+    }
+
+    const formatDateRange = () => {
+        const { start, end } = selectedRange
+
+        if (!start) {
+            return ' '
+        }
+
+        const startDate = start
+        const endDate = end || start
+
+        const startFormatted = format(startDate, ' MMMM yyyy', { locale: ru })
+        const endFormatted = format(endDate, ' MMMM yyyy', { locale: ru })
+
+        if (isSameDay(startDate, endDate)) {
+            return `${startFormatted}`
+        }
+
+        if (getYear(startDate) === getYear(endDate)) {
+            if (format(startDate, ' MMMM') === format(endDate, 'MMMM')) {
+                return ` ${startFormatted}`
+            }
+            return ` ${format(startDate, 'MMMM', {
+                locale: ru,
+            })} — ${endFormatted}`
+        }
+
+        return ` ${startFormatted} — ${endFormatted}`
+    }
 
     return (
         <S.MainBlock>
             <S.H2>Анализ расходов</S.H2>
-            <S.ContentContainer>
-                <S.NewExpenseContainer>
-                    <S.NewExpenseTitle>
-                        Период
-                        <S.PeriodElements>
-                            {['Месяц', 'Год'].map((period) => (
-                                <S.PeriodElement
-                                    key={period}
-                                    $active={selectedPeriod === period}
-                                    onClick={() => setSelectedPeriod(period)}
-                                >
-                                    {period}
-                                </S.PeriodElement>
-                            ))}
-                        </S.PeriodElements>
-                    </S.NewExpenseTitle>
+            <S.NewExpenseContainer>
+                <S.NewExpenseTitle>
+                    Период
+                    <S.PeriodElements>
+                        <S.PeriodElement
+                            $isActive={activePeriod === 'month'}
+                            onClick={handleMonthClick}
+                        >
+                            Месяц
+                        </S.PeriodElement>
+                        <S.PeriodElement
+                            $isActive={activePeriod === 'year'}
+                            onClick={handleYearClick}
+                        >
+                            Год
+                        </S.PeriodElement>
+                    </S.PeriodElements>
+                </S.NewExpenseTitle>
 
-                    <S.CalendarContainer>
-                        {selectedPeriod === 'Месяц' && (
-                            <>
-                                <S.DaysOfWeek>
-                                    {dayNames.map((dayName, index) => (
-                                        <S.DayOfWeek key={index}>{dayName}</S.DayOfWeek>
-                                    ))}
-                                </S.DaysOfWeek>
-                                <S.CalendarGrid>
-                                    {calendarDays.map((item, index) => {
-                                        if (item.type === 'monthHeader') {
-                                            return (
-                                                <S.MonthHeader key={`month-${index}`}>
-                                                    {item.month}
-                                                </S.MonthHeader>
-                                            )
-                                        } else if (item.type === 'placeholder') {
-                                            return <S.Placeholder key={`placeholder-${index}`} />
-                                        } else {
-                                            const day = item.day
-                                            return (
-                                                <S.Day
-                                                    key={day.toISOString()}
-                                                    onClick={() => handleDayClick(day)}
-                                                    $selected={isSelectedDay(day)}
-                                                    $today={isCurrentDay(day)}
-                                                >
-                                                    {format(day, 'd')}
-                                                </S.Day>
-                                            )
-                                        }
-                                    })}
-                                </S.CalendarGrid>
-                            </>
-                        )}
-                        {selectedPeriod === 'Год' && (
-                            <S.MonthList>
-                                {yearMonthList.map((item, index) => {
-                                    if (item.type === 'yearHeader') {
-                                        return (
-                                            <S.YearHeader key={`year-${getYear(item.year)}`}>
-                                                {getYear(item.year)}
-                                            </S.YearHeader>
-                                        )
-                                    } else {
-                                        const months = item.months
-                                        const year = item.year
-                                        return (
-                                            <S.MonthGrid key={`month-grid-${getYear(year)}-${index}`}>
-                                                {months.map((month) => (
-                                                    <S.Month
-                                                        key={month.toISOString()}
-                                                        onClick={() => handleMonthClick(month)}
-                                                        $selected={isSelectedMonth(month)}
-                                                    >
-                                                        {format(month, 'MMMM', { locale: ru })}
-                                                    </S.Month>
-                                                ))}
-                                            </S.MonthGrid>
-                                        )
-                                    }
-                                })}
-                            </S.MonthList>
-                        )}
-                    </S.CalendarContainer>
-                </S.NewExpenseContainer>
+                {showYearView ? (
+                    renderYearView()
+                ) : (
+                    <div ref={calendarRef}>
+                        <S.DaysOfWeek>
+                            {dayNames.map((dayName, index) => (
+                                <S.DayOfWeek key={index}>{dayName}</S.DayOfWeek>
+                            ))}
+                        </S.DaysOfWeek>
+                        {months.map((date) => renderCalendarMonth(date))}
+                    </div>
+                )}
+            </S.NewExpenseContainer>
+            <S.ContentContainer>
                 <S.ExpensesTableContainer>
                     <S.TableHeader>
-                        <S.H3>{totalAmount.toFixed(0)} ₽</S.H3>
+                        <S.H3>9 581 ₽</S.H3>
                         <S.FiltersContainer>
-                            Расходы за {format(periodRange.start, 'dd MMMM yyyy', { locale: ru })} –{' '}
-                            {format(periodRange.end, 'dd MMMM yyyy', { locale: ru })}
+                            <div>
+                                Расходы за
+                                {formatDateRange()}
+                                {formatDateRangeDays()}
+                            </div>
                         </S.FiltersContainer>
+
+                        <ChartComponent />
                     </S.TableHeader>
-                    {filteredExpenses.length > 0 ? (
-                        <ChartComponent expenses={filteredExpenses} />
-                    ) : (
-                        <div>Нет данных для отображения за выбранный период.</div>
-                    )}
                 </S.ExpensesTableContainer>
             </S.ContentContainer>
         </S.MainBlock>
     )
 }
 
-export default AnalysisPage
+export default Analysispage
