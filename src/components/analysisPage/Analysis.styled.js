@@ -138,7 +138,6 @@ export const AddExpenseButton = styled.button`
 export const CalendarContainer = styled.div`
     width: 100%;
     border-radius: 8px;
-    margin-top: 10px;
     box-sizing: border-box;
 `
 
@@ -178,7 +177,7 @@ export const DaysOfWeek = styled.div`
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 6px;
-    margin-bottom: 44px;
+    margin-bottom: 30px;
     color: #999999;
     border-bottom: 1px solid #999999;
     position: sticky;

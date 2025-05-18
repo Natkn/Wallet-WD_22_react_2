@@ -15,6 +15,7 @@ import {
 } from 'date-fns'
 import { ru } from 'date-fns/locale/ru'
 import ChartComponent from '../analysisPage/Diagram'
+import { getTransactionsByPeriod } from '../../services/api'
 
 function Analysispage() {
     const [months, setMonths] = useState([
@@ -27,6 +28,8 @@ function Analysispage() {
     const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
     const [activePeriod, setActivePeriod] = useState('month')
     const [showYearView, setShowYearView] = useState(false)
+    const [setTransactions] = useState([])
+    const [totalExpenses, setTotalExpenses] = useState(0)
 
     const loadMoreMonths = () => {
         setMonths((prevMonths) => {
@@ -224,10 +227,10 @@ function Analysispage() {
                 return format(startDate, 'd MMMM yyyy', { locale: ru })
             } else if (daysDifference < 7 && daysDifference > 0) {
                 return `
-          ${format(startDate, 'd MMMM yyyy', { locale: ru })}
-          —
-          ${format(endDate, 'd MMMM yyyy', { locale: ru })}
-        `
+                    ${format(startDate, 'd MMMM yyyy', { locale: ru })}
+                    —
+                    ${format(endDate, 'd MMMM yyyy', { locale: ru })}
+                `
             } else if (weeksDifference >= 1) {
                 const startFormatted = format(startDate, 'd MMMM', {
                     locale: ru,
@@ -236,10 +239,10 @@ function Analysispage() {
                     locale: ru,
                 })
                 return `
-          ${startFormatted}
-          —
-          ${endFormatted}
-        `
+                    ${startFormatted}
+                    —
+                    ${endFormatted}
+                `
             } else {
                 return ' Некорректный период'
             }
@@ -251,7 +254,7 @@ function Analysispage() {
     }
 
     const formatDateRange = () => {
-        const { start, end } = selectedRange
+        const { 0: start, 1: end } = selectedRange
 
         if (!start) {
             return ' '
@@ -278,6 +281,37 @@ function Analysispage() {
 
         return ` ${startFormatted} — ${endFormatted}`
     }
+
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            if (selectedRange[0] && selectedRange[1]) {
+                const startDate = format(selectedRange[0], 'yyyy-MM-dd')
+                const endDate = format(selectedRange[1], 'yyyy-MM-dd')
+
+                try {
+                    const data = await getTransactionsByPeriod(
+                        startDate,
+                        endDate
+                    )
+                    setTransactions(data)
+                    const total = data.reduce(
+                        (acc, transaction) => acc + transaction.amount,
+                        0
+                    )
+                    setTotalExpenses(total)
+                } catch (error) {
+                    console.error('Failed to fetch transactions:', error)
+                    setTransactions([])
+                    setTotalExpenses(0)
+                }
+            } else {
+                setTransactions([])
+                setTotalExpenses(0)
+            }
+        }
+
+        fetchTransactions()
+    }, [selectedRange, setTransactions])
 
     return (
         <S.MainBlock>
@@ -317,7 +351,7 @@ function Analysispage() {
             <S.ContentContainer>
                 <S.ExpensesTableContainer>
                     <S.TableHeader>
-                        <S.H3>9 581 ₽</S.H3>
+                        <S.H3>{totalExpenses} ₽</S.H3>{' '}
                         <S.FiltersContainer>
                             <div>
                                 Расходы за
@@ -325,7 +359,6 @@ function Analysispage() {
                                 {formatDateRangeDays()}
                             </div>
                         </S.FiltersContainer>
-
                         <ChartComponent />
                     </S.TableHeader>
                 </S.ExpensesTableContainer>
