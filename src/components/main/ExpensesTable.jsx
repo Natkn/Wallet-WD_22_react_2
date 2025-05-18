@@ -45,12 +45,14 @@ const ExpensesTable = ({
                                 onClick={() => onDelete(expense._id)}
                             >
                                 <S.DeleteIcon
+
                                     src={
                                         editMode &&
                                         editingExpenseIndex === index
                                             ? 'DelBtnGreen.svg'
                                             : 'DelBtn.svg'
                                     }
+
                                     alt="Delete icon"
                                 />
                             </S.DeleteButton>

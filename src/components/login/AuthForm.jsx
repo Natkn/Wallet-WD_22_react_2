@@ -139,6 +139,7 @@ function AuthForm() {
         return /\S+@\S+\.\S+/.test(email)
     }
 
+
     return (
         <S.Wrapper>
             <S.ContainerSignin>
@@ -147,12 +148,11 @@ function AuthForm() {
                         <S.ModalTtl>
                             <h2>{isSignUp ? 'Регистрация' : 'Вход'}</h2>
                         </S.ModalTtl>
-                        <S.ModalFormLogin
-                            id="formLogIn"
-                            onSubmit={handleSubmit}
-                        >
+                        <S.ModalFormLogin id="formLogIn" onSubmit={handleSubmit}>
                             {isSignUp && (
-                                <BaseInput
+                                <BaseInput                                  
+
+ 
                                     type="text"
                                     name="name"
                                     id="formname"
@@ -207,7 +207,6 @@ function AuthForm() {
                             {formError && (
                                 <S.ErrorMessage>{formError}</S.ErrorMessage>
                             )}
-
                             <BaseButton
                                 type="submit"
                                 onClick={handleSubmit}

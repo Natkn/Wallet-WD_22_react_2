@@ -5,24 +5,7 @@ const ExpenseContext = createContext();
 
 export function ExpenseProvider({ children }) {
   const [expenses, setExpenses] = useState([
-    {
-      description: 'Пятёрочка',
-      category: 'Еда',
-      date: '03.07.2024',
-      amount: '3 500 ₽',
-    },
-    {
-      description: 'Метро',
-      category: 'Транспорт',
-      date: '02.07.2024',
-      amount: '200 ₽',
-    },
-    {
-      description: 'Квартплата',
-      category: 'Жильё',
-      date: '01.07.2024',
-      amount: '5 000 ₽',
-    },
+   
   ]);
 
   return (

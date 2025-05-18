@@ -83,6 +83,7 @@ export const getTransactionsByPeriod = async (start, end) => {
 }
 
 const formatDate = (dateString) => {
-    const [day, month, year] = dateString.split('.')
-    return `${year}-${month}-${day}`
-}
+
+  const [day, month, year] = dateString.split('.');
+  return `${year}-${month}-${day}`;
+};

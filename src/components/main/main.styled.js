@@ -243,6 +243,7 @@ export const EditIcon = styled.img`
     height: 12px;
 `
 
+
 export const NewExpenseTitle = styled.h2`
     margin-bottom: 26px;
     font-weight: 600;
