@@ -38,7 +38,9 @@ export const NewExpenseContainer = styled.div`
     flex-direction: column;
     width: 379px;
     height: 542px;
-    padding: 32px;
+    padding-left: 32px;
+    padding-bottom: 32px;
+    padding-right: 32px;
     border-radius: 8px;
     background-color: #fff;
     border-radius: 30px;
@@ -70,6 +72,10 @@ export const NewExpenseContainer = styled.div`
 `
 
 export const NewExpenseTitle = styled.h2`
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 10;
     font-size: 1.5em;
     margin-bottom: 10px;
     display: flex;
@@ -77,6 +83,8 @@ export const NewExpenseTitle = styled.h2`
     flex-direction: row;
     justify-content: space-between;
     align-content: center;
+    padding-top: 32px;
+    padding-bottom: 12px;
 `
 
 export const PeriodElements = styled.div`
@@ -170,9 +178,12 @@ export const DaysOfWeek = styled.div`
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 6px;
-    margin-bottom: 24px;
+    margin-bottom: 44px;
     color: #999999;
     border-bottom: 1px solid #999999;
+    position: sticky;
+    top: 72px;
+    background-color: white;
 `
 
 export const DayOfWeek = styled.div`
@@ -394,7 +405,6 @@ export const MonthsContainer = styled.div`
 `
 
 export const MonthName = styled.div`
-    width: 102px;
     height: 34px;
     border-radius: 60px;
     display: flex;
