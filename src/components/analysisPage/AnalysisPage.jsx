@@ -18,6 +18,8 @@ import ChartComponent from '../analysisPage/Diagram'
 import { getTransactionsByPeriod } from '../../services/api'
 
 function Analysispage() {
+    const [expenses, setExpenses] = useState([])
+
     const [months, setMonths] = useState([
         new Date(),
         addMonths(new Date(), 1),
@@ -37,7 +39,6 @@ function Analysispage() {
             return [...prevMonths, addMonths(lastMonth, 1)]
         })
     }
-
     useEffect(() => {
         const calendarElement = calendarRef.current
 
@@ -157,32 +158,32 @@ function Analysispage() {
         const handleYearMonthClick = (year, monthIndex) => {
             const monthDate = new Date(year, monthIndex, 1)
 
-            if (!selectedRange.start) {
-                setSelectedRange({ start: monthDate, end: null })
-            } else if (monthDate >= selectedRange.start && !selectedRange.end) {
-                setSelectedRange({ ...selectedRange, end: monthDate })
-            } else if (isSameDay(monthDate, selectedRange.start)) {
-                setSelectedRange({ start: null, end: null })
+            if (!selectedRange[0]) {
+                setSelectedRange([monthDate, null])
+            } else if (monthDate >= selectedRange[0] && !selectedRange[1]) {
+                setSelectedRange([selectedRange[0], monthDate])
+            } else if (isSameDay(monthDate, selectedRange[0])) {
+                setSelectedRange([null, null])
             } else if (
-                selectedRange.end &&
-                isSameDay(monthDate, selectedRange.end)
+                selectedRange[1] &&
+                isSameDay(monthDate, selectedRange[1])
             ) {
-                setSelectedRange({ start: null, end: null })
+                setSelectedRange([null, null])
             } else {
-                setSelectedRange({ start: monthDate, end: null })
+                setSelectedRange([monthDate, null])
             }
         }
 
         const isMonthSelected = (year, monthIndex) => {
-            if (selectedRange.start && selectedRange.end) {
+            if (selectedRange[0] && selectedRange[1]) {
                 const monthDate = new Date(year, monthIndex, 1)
                 return isWithinInterval(monthDate, {
-                    start: selectedRange.start,
-                    end: selectedRange.end,
+                    start: selectedRange[0],
+                    end: selectedRange[1],
                 })
-            } else if (selectedRange.start) {
+            } else if (selectedRange[0]) {
                 const monthDate = new Date(year, monthIndex, 1)
-                return isSameDay(monthDate, selectedRange.start)
+                return isSameDay(monthDate, selectedRange[0])
             }
             return false
         }
@@ -227,10 +228,10 @@ function Analysispage() {
                 return format(startDate, 'd MMMM yyyy', { locale: ru })
             } else if (daysDifference < 7 && daysDifference > 0) {
                 return `
-          ${format(startDate, 'd MMMM yyyy', { locale: ru })}
-          —
-          ${format(endDate, 'd MMMM yyyy', { locale: ru })}
-        `
+                    ${format(startDate, 'd MMMM yyyy', { locale: ru })}
+                    —
+                    ${format(endDate, 'd MMMM yyyy', { locale: ru })}
+                `
             } else if (weeksDifference >= 1) {
                 const startFormatted = format(startDate, 'd MMMM', {
                     locale: ru,
@@ -239,10 +240,10 @@ function Analysispage() {
                     locale: ru,
                 })
                 return `
-          ${startFormatted}
-          —
-          ${endFormatted}
-        `
+                    ${startFormatted}
+                    —
+                    ${endFormatted}
+                `
             } else {
                 return ' Некорректный период'
             }
@@ -294,6 +295,7 @@ function Analysispage() {
                         endDate
                     )
                     setTransactions(data)
+                    setExpenses(data)
                     const total = data.reduce(
                         (acc, transaction) => acc + transaction.amount,
                         0
@@ -302,10 +304,12 @@ function Analysispage() {
                 } catch (error) {
                     console.error('Failed to fetch transactions:', error)
                     setTransactions([])
+                    setExpenses([])
                     setTotalExpenses(0)
                 }
             } else {
                 setTransactions([])
+                setExpenses([])
                 setTotalExpenses(0)
             }
         }
@@ -359,7 +363,10 @@ function Analysispage() {
                                 {formatDateRangeDays()}
                             </div>
                         </S.FiltersContainer>
-                        <ChartComponent transactions={transactions} />
+                        <ChartComponent
+                            transactions={transactions}
+                            expenses={expenses}
+                        />
                     </S.TableHeader>
                 </S.ExpensesTableContainer>
             </S.ContentContainer>

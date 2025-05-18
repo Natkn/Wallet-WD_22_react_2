@@ -73,6 +73,7 @@ export const useExpenseForm = (expenses, setExpenses) => {
             date: !newDate || !isValidDateFormat(newDate),
             amount: !newAmount || !isValidAmountFormat(newAmount),
         }
+
         setErrors(newErrors)
         setDescriptionError(newErrors.description)
         setDateError(newErrors.date)

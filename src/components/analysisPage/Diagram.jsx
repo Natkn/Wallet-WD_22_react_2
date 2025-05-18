@@ -43,14 +43,12 @@ const ChartComponent = ({ expenses }) => {
                     const amount = parseFloat(
                         expense.amount.replace(' ₽', '').replace(/ /g, '')
                     )
-
                     if (!isNaN(amount)) {
                         totals[expense.category] += amount
                     }
                 }
             })
         }
-
         return totals
     }, [expenses])
 

@@ -32,6 +32,7 @@ const MainLayout = ({
     handleCategorySelect,
     handleSortSelect,
     sortOptions,
+    addExpense,
 }) => (
     <S.MainBlock>
         <S.H2>Мои расходы</S.H2>
@@ -126,6 +127,7 @@ const MainLayout = ({
                 )}
             </S.ExpensesTableContainer>
             <ExpenseForm
+                addExpense={addExpense}
                 newDescription={newDescription}
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
@@ -185,6 +187,7 @@ MainLayout.propTypes = {
     toggleSortDropdown: PropTypes.func.isRequired,
     handleCategorySelect: PropTypes.func.isRequired,
     handleSortSelect: PropTypes.func.isRequired,
+    addExpense: PropTypes.func.isRequired,
     sortOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
 
