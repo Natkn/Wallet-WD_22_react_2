@@ -28,7 +28,7 @@ function Analysispage() {
     const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
     const [activePeriod, setActivePeriod] = useState('month')
     const [showYearView, setShowYearView] = useState(false)
-    const [setTransactions] = useState([])
+    const [transactions, setTransactions] = useState([])
     const [totalExpenses, setTotalExpenses] = useState(0)
 
     const loadMoreMonths = () => {
@@ -227,10 +227,10 @@ function Analysispage() {
                 return format(startDate, 'd MMMM yyyy', { locale: ru })
             } else if (daysDifference < 7 && daysDifference > 0) {
                 return `
-                    ${format(startDate, 'd MMMM yyyy', { locale: ru })}
-                    —
-                    ${format(endDate, 'd MMMM yyyy', { locale: ru })}
-                `
+          ${format(startDate, 'd MMMM yyyy', { locale: ru })}
+          —
+          ${format(endDate, 'd MMMM yyyy', { locale: ru })}
+        `
             } else if (weeksDifference >= 1) {
                 const startFormatted = format(startDate, 'd MMMM', {
                     locale: ru,
@@ -239,10 +239,10 @@ function Analysispage() {
                     locale: ru,
                 })
                 return `
-                    ${startFormatted}
-                    —
-                    ${endFormatted}
-                `
+          ${startFormatted}
+          —
+          ${endFormatted}
+        `
             } else {
                 return ' Некорректный период'
             }
@@ -254,7 +254,7 @@ function Analysispage() {
     }
 
     const formatDateRange = () => {
-        const { 0: start, 1: end } = selectedRange
+        const { start, end } = selectedRange
 
         if (!start) {
             return ' '
@@ -359,7 +359,7 @@ function Analysispage() {
                                 {formatDateRangeDays()}
                             </div>
                         </S.FiltersContainer>
-                        <ChartComponent />
+                        <ChartComponent transactions={transactions} />
                     </S.TableHeader>
                 </S.ExpensesTableContainer>
             </S.ContentContainer>
