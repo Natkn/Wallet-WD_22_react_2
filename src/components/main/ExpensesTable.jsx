@@ -45,11 +45,14 @@ const ExpensesTable = ({
                                 onClick={() => onDelete(expense._id)}
                             >
                                 <S.DeleteIcon
-                                    src={editMode &&
-                                      editingExpenseIndex === index
-                                          ? 'DelBtnGreen.svg'
-                                          : 'DelBtn.svg'
-                                  }
+
+                                    src={
+                                        editMode &&
+                                        editingExpenseIndex === index
+                                            ? 'DelBtnGreen.svg'
+                                            : 'DelBtn.svg'
+                                    }
+
                                     alt="Delete icon"
                                 />
                             </S.DeleteButton>
@@ -68,7 +71,7 @@ const ExpensesTable = ({
 )
 
 ExpensesTable.propTypes = {
-  onDelete: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
     expenses: PropTypes.arrayOf(
         PropTypes.shape({
             description: PropTypes.string.isRequired,
