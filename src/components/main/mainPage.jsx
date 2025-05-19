@@ -1,5 +1,4 @@
 
-
 import { useState, useEffect } from 'react';
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction } from '../../services/api';
 import FoodIcon from '../icons/FoodIcon';
@@ -8,6 +7,23 @@ import MainLayout from './MainLayout';
 import { useExpenseForm } from '../../hooks/useExpenseForm';
 import * as S from './main.styled';
 
+const CATEGORY_MAPPING = {
+  'Еда': 'food',
+  'Транспорт': 'transport',
+  'Жильё': 'housing',
+  'Развлечения': 'joy',
+  'Образование': 'education',
+  'Другое': 'others'
+};
+
+const REVERSE_CATEGORY_MAPPING = {
+  'food': 'Еда',
+  'transport': 'Транспорт',
+  'housing': 'Жильё',
+  'joy': 'Развлечения',
+  'education': 'Образование',
+  'others': 'Другое'
+};
 function MainPage() {
   const { expenses = [], setExpenses } = useExpenses() || {}; // Дефолтное значение для expenses
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -128,7 +144,6 @@ function MainPage() {
     Другое: <S.CategoryIcon src="/OtherIcon.svg" alt="Other icon" />,
   };
   
-
     const toggleCategoryDropdown = () => {
         setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
         setIsSortDropdownOpen(false)
@@ -159,7 +174,6 @@ function MainPage() {
               )
             : expenses || []
     }
-
 
 
   function sortExpenses(expenses, sortOrder) {
@@ -213,6 +227,7 @@ function MainPage() {
       onDelete={handleDelete}
     />
   );
+    
 }
 
 export default MainPage
