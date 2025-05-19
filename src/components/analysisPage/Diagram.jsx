@@ -60,6 +60,20 @@ const ChartComponent = ({ expenses = [] }) => { // Добавлено значе
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+
+            padding: {
+            
+            top: 30,
+            
+            bottom: 0,
+            
+            left: 0,
+            
+            right: 0,
+            
+            }
+        },
         plugins: {
             legend: { display: false },
             datalabels: {
