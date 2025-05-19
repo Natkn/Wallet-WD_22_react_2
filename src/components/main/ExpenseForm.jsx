@@ -21,6 +21,10 @@ const ExpenseForm = ({
     handleAmountChange,
 }) => {
     const [initialGreen, setInitialGreen] = useState(true)
+    const [description, setDescription] = useState('')
+    const [amount, setAmount] = useState('')
+    const [category] = useState('Еда')
+    const [date] = useState(new Date().toISOString().slice(0, 10))
 
     const isButtonValid = useMemo(() => {
         return (
@@ -49,8 +53,32 @@ const ExpenseForm = ({
             setInitialGreen(true)
         }
     }, [isButtonValid, initialGreen, setInitialGreen])
+
+    const [expenses, setExpenses] = useState(() => {
+        const storedExpenses = localStorage.getItem('expenses')
+        return storedExpenses ? JSON.parse(storedExpenses) : []
+    })
+
+    useEffect(() => {
+        localStorage.setItem('expenses', JSON.stringify(expenses))
+    }, [expenses])
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        const newExpense = {
+            description,
+            amount,
+            category,
+            date,
+            id: Date.now(),
+        }
+        setExpenses([...expenses, newExpense])
+        setDescription('')
+        setAmount('')
+    }
+
     return (
-        <S.NewExpenseContainer>
+        <S.NewExpenseContainer onSubmit={handleSubmit}>
             <S.NewExpenseTitle>
                 {editMode ? 'Редактирование' : 'Новый расход'}
             </S.NewExpenseTitle>

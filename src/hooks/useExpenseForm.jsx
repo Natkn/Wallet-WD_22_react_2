@@ -1,27 +1,23 @@
-import { useState } from 'react';
-import { isValidDateFormat, isValidAmountFormat } from '../utils/helper';
+import { useState } from 'react'
+import { isValidDateFormat, isValidAmountFormat } from '../utils/helper'
 
-const CATEGORY_MAPPING = {
-  'Еда': 'food',
-  'Транспорт': 'transport',
-  'Жильё': 'housing',
-  'Развлечения': 'joy',
-  'Образование': 'education',
-  'Другое': 'others'
-};
-export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
-  const [newDescription, setNewDescription] = useState('');
-  const [newCategory, setNewCategory] = useState('');
-  const [newDate, setNewDate] = useState('');
-  const [newAmount, setNewAmount] = useState('');
-  const [errors, setErrors] = useState({
-    description: false,
-    category: false,
-    date: false,
-    amount: false,
-  });
-  const [editMode, setEditMode] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+export const useExpenseForm = (expenses, setExpenses) => {
+    const [newDescription, setNewDescription] = useState('')
+    const [newCategory, setNewCategory] = useState('')
+    const [newDate, setNewDate] = useState('')
+    const [newAmount, setNewAmount] = useState('')
+    const [errors, setErrors] = useState({
+        description: false,
+        category: false,
+        date: false,
+        amount: false,
+    })
+    const [descriptionError, setDescriptionError] = useState(false)
+    const [dateError, setDateError] = useState(false)
+    const [amountError, setAmountError] = useState(false)
+    const [editMode, setEditMode] = useState(false)
+    const [editingExpenseIndex, setEditingExpenseIndex] = useState(null)
+
 
   const validateForm = () => {
     const newErrors = {
@@ -53,28 +49,21 @@ export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
     
   });
 
-  const resetForm = () => {
-    setNewDescription('');
-    setNewCategory('');
-    setNewDate('');
-    setNewAmount('');
-    
-    setEditingId(null);
-    setErrors({ description: false, category: false, date: false, amount: false });
-    
-  };
-  const handleAddExpense = async () => {
-    if (!validateForm()) return;
-    
-    const transactionData = prepareTransactionData();
-    try {
-      await onSubmit(transactionData, editingId);
-      resetForm();
-      
-    } catch (error) {
-      console.error('Ошибка сохранения:', error);
+        setNewDescription('')
+        setNewCategory('')
+        setNewDate('')
+        setNewAmount('')
+        setErrors({
+            description: false,
+            category: false,
+            date: false,
+            amount: false,
+        })
+        setDescriptionError(false)
+        setDateError(false)
+        setAmountError(false)
     }
-  };
+
 
   return {
     newDescription,
@@ -113,3 +102,4 @@ export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
     
   };
 };
+
