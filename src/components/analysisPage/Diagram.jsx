@@ -3,7 +3,7 @@ import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 Chart.register(ChartDataLabels)
-import { useEffect, useRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import styled from 'styled-components'
 
 const ChartContainer = styled.div`
@@ -13,96 +13,79 @@ const ChartContainer = styled.div`
     margin-bottom: 0;
     border-radius: 12px;
 `
-const ChartComponent = () => {
-    const chartRef = useRef(null)
 
+const ChartComponent = ({ expenses = [] }) => { // Добавлено значение по умолчанию
     const barChartData = useMemo(() => {
-        return {
-            labels: [
-                'Еда',
-                'Транспорт',
-                'Жилье',
-                'Развлечения',
-                'Образование',
-                'Другое',
-            ],
-            datasets: [
-                {
-                    data: [3590, 1835, 0, 1250, 600, 2306],
-                    label: 'Расходы',
-                    backgroundColor: [
-                        '#D9B6FF',
-                        '#FFB53D',
-                        '#6EE4FE',
-                        '#B0AEFF',
-                        '#BCEC30',
-                        '#FFB9B8',
-                    ],
-                    borderWidth: 0,
-                    borderRadius: 12,
-                    borderSkipped: false,
-                    height: 387,
-                },
-            ],
-        }
-    }, [])
+        const categoryMap = {
+            'Еда': 0,
+            'Транспорт': 0,
+            'Жилье': 0,
+            'Развлечения': 0,
+            'Образование': 0,
+            'Другое': 0
+        };
+        const REVERSE_CATEGORY_MAPPING = {
+            food: 'Еда',
+            transport: 'Транспорт',
+            housing: 'Жилье',
+            joy: 'Развлечения',
+            education: 'Образование',
+            others: 'Другое'
+          };
+          
 
-    useEffect(() => {
-        if (chartRef.current) {
-            const chartInstance = chartRef.current.chartInstance
-            if (chartInstance) {
-                chartInstance.destroy()
-            }
+          expenses?.forEach(({ category, sum }) => {
+            const russianCategory = REVERSE_CATEGORY_MAPPING[category] || 'Другое';
+            categoryMap[russianCategory] += sum;
+          });
+
+        return {
+            labels: Object.keys(categoryMap),
+            datasets: [{
+                data: Object.values(categoryMap),
+                backgroundColor: [
+                    '#D9B6FF',
+                    '#FFB53D',
+                    '#6EE4FE',
+                    '#B0AEFF',
+                    '#BCEC30',
+                    '#FFB9B8',
+                ],
+                borderWidth: 0,
+                borderRadius: 12,
+            }]
         }
-    }, [barChartData])
+    }, [expenses])
 
     const options = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: {
-                display: false,
-            },
-            title: {
-                display: false,
-            },
+            legend: { display: false },
             datalabels: {
-                display: true,
                 color: 'black',
-                font: {
-                    weight: 600,
-                    size: 16,
-                    family: 'Montserrat',
-                },
-                formatter: (value) => value + ' ₽',
+                font: { weight: 600, size: 12 },
+                formatter: (value) => value ? `${value} ₽` : '',
                 anchor: 'end',
-                align: 'top',
-            },
+                align: 'top'
+            }
         },
         scales: {
-            x: {
-                type: 'category',
-                grid: {
-                    drawBorder: false,
-                    display: false,
-                },
-                ticks: {
-                    display: true,
-                    font: {
-                        size: 12,
-                    },
-                },
+            x: { 
+                grid: { display: false },
+                ticks: { font: { size: 12 } }
             },
-            y: {
-                type: 'linear',
-                display: false,
-            },
-        },
+            y: { display: false }
+        }
     }
 
     return (
         <ChartContainer>
-            <Bar data={barChartData} options={options} ref={chartRef} />
+            <Bar 
+                data={barChartData} 
+                options={options}
+                key={JSON.stringify(barChartData)} // Форсируем обновление
+            />
         </ChartContainer>
     )
 }
