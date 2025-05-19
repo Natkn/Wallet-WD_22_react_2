@@ -13,6 +13,7 @@ export const H2 = styled.h2`
     font-size: 32px;
     line-height: 150%;
     letter-spacing: 0px;
+    padding-top: 20px;
 `
 
 export const ContentContainer = styled.div`
@@ -28,7 +29,7 @@ export const ExpensesTableContainer = styled.div`
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 32px;
-    overflow-x: auto; /* Добавляем горизонтальную прокрутку */
+    overflow-x: auto;
 `
 
 export const NewExpenseContainer = styled.div`
@@ -136,14 +137,15 @@ export const DropdownArrow = styled.img`
     margin-left: 8px;
     height: 7px;
     transition: transform 0.3s ease;
-    transform: ${({ isOpen }) => (isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
+    transform: ${(props) =>
+        props.$isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
 `
 
 export const Table = styled.table`
     width: 100%;
     border-collapse: collapse;
     position: relative;
-    table-layout: auto; /* Позволяет столбцам адаптироваться */
+    table-layout: auto;
 `
 
 export const TableHead = styled.thead`
@@ -160,29 +162,29 @@ export const TableHeaderCell = styled.th`
     line-height: 100%;
     letter-spacing: 0px;
     vertical-align: middle;
-    white-space: nowrap; /* Предотвращаем перенос текста */
+    white-space: nowrap;
 
     &:first-child {
         padding-left: 0;
-        min-width: 150px; /* Минимальная ширина для "Описание" */
+        min-width: 150px;
     }
 
     &:last-child {
         padding-right: 108px;
-        width: 40px; /* Фиксированная ширина для кнопки редактирования */
+        width: 40px;
     }
 
     &:nth-child(2) {
         padding-right: 30px;
-        min-width: 120px; /* Минимальная ширина для "Категория" */
+        min-width: 120px;
     }
 
     &:nth-child(3) {
-        min-width: 100px; /* Уменьшаем ширину для "Дата" */
+        min-width: 100px;
     }
 
     &:nth-child(4) {
-        min-width: 100px; /* Минимальная ширина для "Сумма" */
+        min-width: 100px;
     }
 `
 
@@ -199,7 +201,7 @@ export const TableRow = styled.tr`
 
 export const TableCell = styled.td`
     padding-top: 14px;
-    white-space: nowrap; /* Предотвращаем перенос текста */
+    white-space: nowrap;
 
     &:first-child {
         padding-left: 0;
@@ -241,6 +243,7 @@ export const EditIcon = styled.img`
     height: 12px;
 `
 
+
 export const NewExpenseTitle = styled.h2`
     margin-bottom: 26px;
     font-weight: 600;
@@ -274,30 +277,67 @@ export const InputField = styled.input`
     vertical-align: middle;
 
     &:focus {
-        border-color: #1fa46c;
         outline: none;
     }
+    border-color: ${({
+        $descriptionerror,
+        $dateerror,
+        $amounterror,
+        $newdate,
+        $newamount,
+        $errors = {},
+        $newdescription,
+    }) => {
+        if ($descriptionerror || $errors.description) {
+            return 'red'
+        }
+        if ($dateerror || $errors.date) {
+            return 'red'
+        }
+        if ($amounterror || $errors.amount) {
+            return 'red'
+        }
+        if ($newdescription) {
+            return '#1FA46C'
+        }
+        if ($newdate) {
+            return '#1FA46C'
+        }
+        if ($newamount) {
+            return '#1FA46C'
+        }
+        return '#999999'
+    }};
 
-    ${({ $hasError }) =>
-        $hasError &&
-        `
-        border-color: red;
-        background-color: #FFF5F5;
-    `}
-
-    ${({ $hasValue }) =>
-        $hasValue &&
-        `
-        border-color: #1FA46C;
-        background-color: #DBFFE9;
-    `}
-
-    ${({ $isValid }) =>
-        $isValid &&
-        `
-        border-color: #1FA46C;
-        background-color: #DBFFE9;
-    `}
+    background-color: ${({
+        $descriptionerror,
+        $dateerror,
+        $amounterror,
+        $newdate,
+        $newamount,
+        $errors = {},
+        $newdescription,
+    }) => {
+        if ($descriptionerror || $errors.description) {
+            return '#FFF5F5'
+        }
+        if ($dateerror || $errors.date) {
+            return '#FFF5F5'
+        }
+        if ($amounterror || $errors.amount) {
+            return '#FFF5F5'
+        }
+        if ($newdescription) {
+            return '#DBFFE9'
+        }
+        if ($newdate) {
+            return '#DBFFE9'
+        }
+        if ($newamount) {
+            return '#DBFFE9'
+        }
+        return '#FFFFFF'
+    }};
 `
 
 export const CategoryButtonsContainer = styled.div`
@@ -352,10 +392,15 @@ export const CategoryIcon = styled.img`
 `
 
 export const AddExpenseButton = styled.button`
-    background-color: #1fa46c;
+    background-color: ${(props) =>
+        props.$initialGreen
+            ? '#1fa46c'
+            : props.$isbuttonvalid
+            ? '#1fa46c'
+            : '#999999'};
+    cursor: ${(props) => (props.$isbuttonvalid ? 'pointer' : 'not-allowed')};
     color: white;
     border: none;
-    cursor: pointer;
     font-size: 1em;
     width: 313px;
     height: 39px;
@@ -374,7 +419,8 @@ export const AddExpenseButton = styled.button`
     justify-content: center;
 
     &:hover {
-        background-color: #147049;
+        background-color: ${(props) =>
+            props.$isbuttonvalid ? '#147049' : '#7b7878'};
     }
 `
 

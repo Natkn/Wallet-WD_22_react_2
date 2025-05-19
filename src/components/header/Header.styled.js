@@ -12,11 +12,12 @@ export const HeaderBlock = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     position: relative;
-    max-width: 1160px;
+    max-width: 1200px;
+    padding: 20px;
     margin: 0 auto;
     box-sizing: border-box;
+    gap: 22vw;
 
     & > * {
         flex: 0 0 auto;
@@ -37,7 +38,7 @@ export const HeaderCenter = styled.div`
     display: flex;
     align-items: center;
     gap: 36px;
-    margin-right: 16vw;
+    margin-right: 22vw;
 `
 
 export const HeaderButton = styled.button`
@@ -59,6 +60,13 @@ export const HeaderButton = styled.button`
         color: #1fa46c;
         border-bottom: 1px solid #1fa46c;
     }
+
+    ${(props) =>
+        props.$active &&
+        `
+    color: #1fa46c;
+        border-bottom: 2px solid #1fa46c;
+  `}
 `
 export const LogoutButton = styled(HeaderButton)`
     font-weight: 600;

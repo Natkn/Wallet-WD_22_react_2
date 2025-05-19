@@ -26,7 +26,7 @@ function AppRoutes() {
             }
             
             if (userData?.token && publicRoutes.includes(currentPath)) {
-                navigate('/main')
+                navigate('/my-expenses')
             }
             
             setIsCheckingAuth(false)
