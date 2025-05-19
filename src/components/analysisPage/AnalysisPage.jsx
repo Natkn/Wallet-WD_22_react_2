@@ -49,7 +49,10 @@ function Analysispage() {
                 format(selectedRange[0], 'yyyy-MM-dd'),
                 format(selectedRange[1], 'yyyy-MM-dd')
               );
-              setTransactions(data);
+              setTransactions(data.map(t => ({
+                ...t,
+                category: t.category.toLowerCase() // Нормализация категорий
+              })))
             } catch (error) {
               console.error('Ошибка загрузки:', error);
             }
@@ -225,7 +228,7 @@ function Analysispage() {
                     ${format(endDate, 'd MMMM yyyy', { locale: ru })}
                 `
             } else if (weeksDifference >= 1) {
-                const startFormatted = format(startDate, 'd MMMM', {
+                const startFormatted = format(startDate, 'd MMMM yyyy', {
                     locale: ru,
                 })
                 const endFormatted = format(endDate, 'd MMMM yyyy', {
@@ -278,7 +281,7 @@ function Analysispage() {
     useEffect(() => {
         if (transactions.length > 0) {
           const total = transactions.reduce((acc, transaction) => {
-            // Используем числовое значение sum из API
+            
             return acc + (transaction.sum || 0);
           }, 0);
           setTotalExpenses(total);
@@ -329,7 +332,7 @@ function Analysispage() {
                         <S.FiltersContainer>
                             <div>
                                 Расходы за
-                                {formatDateRange()}
+                                {/* {formatDateRange()} */}
                                 {formatDateRangeDays()}
                             </div>
                         </S.FiltersContainer>
