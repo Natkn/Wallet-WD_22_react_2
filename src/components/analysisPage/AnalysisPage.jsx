@@ -1,4 +1,5 @@
 import * as S from './Analysis.styled'
+import { useExpenses } from '../../ExpenseContext' 
 import { useState, useRef, useEffect } from 'react'
 import {
     format,
@@ -28,8 +29,10 @@ function Analysispage() {
     const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
     const [activePeriod, setActivePeriod] = useState('month')
     const [showYearView, setShowYearView] = useState(false)
-    const [setTransactions] = useState([])
+    const [transactions, setTransactions] = useState([]);
     const [totalExpenses, setTotalExpenses] = useState(0)
+    const { expenses } = useExpenses() || {} // Получаем транзакции из контекста
+    const [filteredExpenses, setFilteredExpenses] = useState([]) // Добавить состояние
 
     const loadMoreMonths = () => {
         setMonths((prevMonths) => {
@@ -39,31 +42,24 @@ function Analysispage() {
     }
 
     useEffect(() => {
-        const calendarElement = calendarRef.current
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    loadMoreMonths()
-                }
-            },
-            {
-                root: null,
-                rootMargin: '200px',
-                threshold: 0.1,
+        const fetchTransactions = async () => {
+          if (selectedRange[0] && selectedRange[1]) {
+            try {
+              const data = await getTransactionsByPeriod(
+                format(selectedRange[0], 'yyyy-MM-dd'),
+                format(selectedRange[1], 'yyyy-MM-dd')
+              );
+              setTransactions(data.map(t => ({
+                ...t,
+                category: t.category.toLowerCase() // Нормализация категорий
+              })))
+            } catch (error) {
+              console.error('Ошибка загрузки:', error);
             }
-        )
-
-        if (calendarElement) {
-            observer.observe(calendarElement.lastElementChild)
-        }
-
-        return () => {
-            if (calendarElement) {
-                observer.unobserve(calendarElement.lastElementChild)
-            }
-        }
-    }, [months])
+          }
+        };
+        fetchTransactions();
+      }, [selectedRange]);
 
     const handleDayClick = (day) => {
         if (selectedRange[0] === null) {
@@ -232,7 +228,7 @@ function Analysispage() {
                     ${format(endDate, 'd MMMM yyyy', { locale: ru })}
                 `
             } else if (weeksDifference >= 1) {
-                const startFormatted = format(startDate, 'd MMMM', {
+                const startFormatted = format(startDate, 'd MMMM yyyy', {
                     locale: ru,
                 })
                 const endFormatted = format(endDate, 'd MMMM yyyy', {
@@ -283,36 +279,17 @@ function Analysispage() {
     }
 
     useEffect(() => {
-        const fetchTransactions = async () => {
-            if (selectedRange[0] && selectedRange[1]) {
-                const startDate = format(selectedRange[0], 'yyyy-MM-dd')
-                const endDate = format(selectedRange[1], 'yyyy-MM-dd')
-
-                try {
-                    const data = await getTransactionsByPeriod(
-                        startDate,
-                        endDate
-                    )
-                    setTransactions(data)
-                    const total = data.reduce(
-                        (acc, transaction) => acc + transaction.amount,
-                        0
-                    )
-                    setTotalExpenses(total)
-                } catch (error) {
-                    console.error('Failed to fetch transactions:', error)
-                    setTransactions([])
-                    setTotalExpenses(0)
-                }
-            } else {
-                setTransactions([])
-                setTotalExpenses(0)
-            }
+        if (transactions.length > 0) {
+          const total = transactions.reduce((acc, transaction) => {
+            
+            return acc + (transaction.sum || 0);
+          }, 0);
+          setTotalExpenses(total);
+        } else {
+          setTotalExpenses(0);
         }
-
-        fetchTransactions()
-    }, [selectedRange, setTransactions])
-
+      }, [transactions]);
+      
     return (
         <S.MainBlock>
             <S.H2>Анализ расходов</S.H2>
@@ -351,15 +328,21 @@ function Analysispage() {
             <S.ContentContainer>
                 <S.ExpensesTableContainer>
                     <S.TableHeader>
-                        <S.H3>{totalExpenses} ₽</S.H3>{' '}
+                    <S.H3>{totalExpenses.toLocaleString('ru-RU')} ₽</S.H3>
                         <S.FiltersContainer>
                             <div>
                                 Расходы за
-                                {formatDateRange()}
+                                {/* {formatDateRange()} */}
                                 {formatDateRangeDays()}
                             </div>
                         </S.FiltersContainer>
-                        <ChartComponent />
+                        <ChartComponent 
+  expenses={transactions.map(t => ({
+    category: t.category,
+    amount: `${t.sum} ₽`,
+    sum: t.sum // Добавляем числовое значение
+  }))}
+/>
                     </S.TableHeader>
                 </S.ExpensesTableContainer>
             </S.ContentContainer>
