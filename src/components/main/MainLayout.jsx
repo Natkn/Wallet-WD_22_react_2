@@ -3,8 +3,8 @@ import ExpensesTable from './ExpensesTable'
 import ExpenseForm from './ExpenseForm'
 import * as S from './main.styled'
 
-const MainLayout = ({
 
+const MainLayout = ({
   sortedExpenses,
   newDescription,
   newCategory,
@@ -166,6 +166,10 @@ MainLayout.propTypes = {
   handleCategorySelect: PropTypes.func.isRequired,
   handleSortSelect: PropTypes.func.isRequired,
   sortOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+
+
+
 }
+
 
 export default MainLayout
