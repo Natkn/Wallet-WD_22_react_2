@@ -121,7 +121,7 @@ export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
     handleDateChange: (e) => {
       let value = e.target.value
       .replace(/[^0-9.]/g, '')
-      .replace(/(\..*)\./g, '$1');
+      // .replace(/(\..*)\./g, '$1');
       if (value.length === 2 || value.length === 5) {
         if (!value.endsWith('.')) value += '.';
       }
