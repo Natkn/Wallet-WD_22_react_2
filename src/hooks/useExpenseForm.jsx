@@ -33,31 +33,6 @@ export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
     setErrors(newErrors);
     return !Object.values(newErrors).some(Boolean);
   };
-
-  // const handleDescriptionChange = (e) => {
-  //   const value = e.target.value;
-  //   setNewDescription(value);
-  //   setDescriptionError(value.length === 0);
-  // };
-
-  // const handleDateChange = (e) => {
-  //   let value = e.target.value.replace(/[^0-9.]/g, '');
-  //   if (value.length === 2 || value.length === 5) {
-  //     if (!value.endsWith('.')) value += '.';
-  //   }
-  //   if (value.length > 10) value = value.slice(0, 10);
-  //   setNewDate(value);
-  //   setDateError(value.length > 0 && !isValidDateFormat(value));
-  // };
-
-  // const handleAmountChange = (e) => {
-  //   let value = e.target.value.replace(/[^0-9\s]/g, '');
-  //   const cleanedValue = value.replace(/\s/g, '');
-  //   const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  //   setNewAmount(formattedValue);
-  //   setAmountError(formattedValue.length > 0 && !isValidAmountFormat(formattedValue));
-  // };
-
   const handleEditExpense = (index) => {
     const expense = expenses[index];
     setNewDescription(expense.description);
@@ -65,15 +40,17 @@ export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
     setNewDate(expense.date);
     setNewAmount(expense.amount.replace(' ₽', ''));
     setEditMode(true);
-    setEditingId(expense._id); // Сохраняем ID для API
+    setEditingId(expense._id); 
     setErrors({ description: false, category: false, date: false, amount: false });
   };
 
   const prepareTransactionData = () => ({
+    
     description: newDescription,
     category: CATEGORY_MAPPING[newCategory],
     date: newDate.split('.').reverse().join('-'),
     sum: parseFloat(newAmount.replace(/\s/g, ''))
+    
   });
 
   const resetForm = () => {
@@ -121,7 +98,6 @@ export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
     handleDateChange: (e) => {
       let value = e.target.value
       .replace(/[^0-9.]/g, '')
-      // .replace(/(\..*)\./g, '$1');
       if (value.length === 2 || value.length === 5) {
         if (!value.endsWith('.')) value += '.';
       }
@@ -134,5 +110,6 @@ export const useExpenseForm = (expenses,  setExpenses, onSubmit) => {
       const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
       setNewAmount(formattedValue);
     }
+    
   };
 };

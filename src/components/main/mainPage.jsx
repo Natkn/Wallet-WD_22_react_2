@@ -102,7 +102,7 @@ function MainPage() {
     try {
       const transactionData = {
         description: newDescription,
-        sum: parseFloat(newAmount),
+        sum: parseFloat(newAmount.replace(/\s/g, '')),
         category: CATEGORY_MAPPING[newCategory],
         date: newDate
       };
@@ -144,58 +144,6 @@ function MainPage() {
     Другое: <S.CategoryIcon src="/OtherIcon.svg" alt="Other icon" />,
   };
   
-
-    // const { expenses = [], setExpenses } = useExpenses() || {}
-    // const [selectedCategory, setSelectedCategory] = useState('')
-    // const [sortOrder, setSortOrder] = useState('Дата')
-    // const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false)
-    // const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false)
-
-    // const {
-    //     newDescription,
-    //     setNewDescription,
-    //     newCategory,
-    //     setNewCategory,
-    //     newDate,
-    //     setNewDate,
-    //     newAmount,
-    //     setNewAmount,
-    //     errors,
-    //     descriptionError,
-    //     dateError,
-    //     amountError,
-    //     editMode,
-    //     editingExpenseIndex,
-    //     handleDescriptionChange,
-    //     handleDateChange,
-    //     handleAmountChange,
-    //     handleEditExpense,
-    //     handleAddExpense,
-    // } = useExpenseForm(expenses, setExpenses)
-
-    // const categories = [
-    //     'Еда',
-    //     'Транспорт',
-    //     'Жильё',
-    //     'Развлечения',
-    //     'Образование',
-    //     'Другое',
-    // ]
-    // const categoryIcons = {
-    //     Еда: <FoodIcon />,
-    //     Транспорт: <S.CategoryIcon src="/car (1).svg" alt="Transport icon" />,
-    //     Жильё: <S.CategoryIcon src="/HouseIcon.svg" alt="Housing icon" />,
-    //     Развлечения: (
-    //         <S.CategoryIcon src="/PlayIcon.svg" alt="Entertainment icon" />
-    //     ),
-    //     Образование: (
-    //         <S.CategoryIcon src="/StudyIcon.svg" alt="Education icon" />
-    //     ),
-    //     Другое: <S.CategoryIcon src="/OtherIcon.svg" alt="Other icon" />,
-    // }
-    // const sortOptions = ['Дата', 'Сумма']
-
-
     const toggleCategoryDropdown = () => {
         setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
         setIsSortDropdownOpen(false)
