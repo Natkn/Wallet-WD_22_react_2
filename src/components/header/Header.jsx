@@ -3,11 +3,9 @@ import logo from '../../../public/logo.svg'
 import {
     HeaderBlock,
     HeaderContainer,
-    HeaderButtons,
+    LogoAndLogout,
+    NavButtons,
     HeaderButton,
-    HeaderRight,
-    HeaderCenter,
-    HeaderLeft,
     LogoutButton,
 } from './Header.styled'
 import { Link, useLocation } from 'react-router-dom'
@@ -25,31 +23,29 @@ function Header() {
     return (
         <HeaderContainer>
             <HeaderBlock>
-                <HeaderLeft>
-                    <HeaderLogo logo={logo} />
-                </HeaderLeft>
                 {showButtons && (
-                    <HeaderButtons>
-                        <HeaderCenter>
-                            <Link to="/my-expenses">
-                                <HeaderButton $active={isMyExpensesActive}>
-                                    Мои расходы
-                                </HeaderButton>
-                            </Link>
-                            <Link to="/expense-analysis">
-                                <HeaderButton $active={isExpenseAnalysisActive}>
-                                    Анализ расходов
-                                </HeaderButton>
-                            </Link>
-                        </HeaderCenter>
-                        <HeaderRight>
+                    <>
+                        <LogoAndLogout>
+                            <HeaderLogo logo={logo} />
+                            <NavButtons>
+                                    <Link to="/my-expenses">
+                                        <HeaderButton $active={isMyExpensesActive}>
+                                            Мои расходы
+                                        </HeaderButton>
+                                    </Link>
+                                    <Link to="/expense-analysis">
+                                        <HeaderButton $active={isExpenseAnalysisActive}>
+                                            Анализ расходов
+                                        </HeaderButton>
+                                    </Link>
+                            </NavButtons>
                             <Link to="/log-out">
                                 <LogoutButton onClick={cleanUserData}>
                                     Выйти
                                 </LogoutButton>
                             </Link>
-                        </HeaderRight>
-                    </HeaderButtons>
+                        </LogoAndLogout>
+                    </>
                 )}
             </HeaderBlock>
         </HeaderContainer>

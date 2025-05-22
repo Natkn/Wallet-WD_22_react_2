@@ -316,6 +316,7 @@ function Analysispage() {
     return (
         <S.MainBlock>
             <S.H2>Анализ расходов</S.H2>
+            <S.ContentContainer>
             <S.NewExpenseContainer>
                 <S.NewExpenseTitle>
                     Период
@@ -348,7 +349,6 @@ function Analysispage() {
                     </div>
                 )}
             </S.NewExpenseContainer>
-            <S.ContentContainer>
                 <S.ExpensesTableContainer>
                     <S.TableHeader>
                         <S.H3>{totalExpenses} ₽</S.H3>{' '}
