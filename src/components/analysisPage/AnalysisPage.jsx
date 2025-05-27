@@ -24,7 +24,10 @@ function Analysispage() {
         addMonths(new Date(), 1),
         addMonths(new Date(), 2),
     ])
-    const [selectedRange, setSelectedRange] = useState([null, null])
+   const [selectedRange, setSelectedRange] = useState([
+    startOfMonth(new Date()), 
+    endOfMonth(new Date())
+]);
     const calendarRef = useRef(null)
     const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
     const [activePeriod, setActivePeriod] = useState('month')
@@ -41,26 +44,25 @@ function Analysispage() {
         })
     }
 
-    useEffect(() => {
-        const fetchTransactions = async () => {
-          if (selectedRange[0] && selectedRange[1]) {
+   useEffect(() => {
+    const fetchTransactions = async () => {
+        if (selectedRange[0] && selectedRange[1]) {
             try {
-              const data = await getTransactionsByPeriod(
-                format(selectedRange[0], 'yyyy-MM-dd'),
-                format(selectedRange[1], 'yyyy-MM-dd')
-              );
-              setTransactions(data.map(t => ({
-                ...t,
-                category: t.category.toLowerCase() // Нормализация категорий
-              })))
+                const data = await getTransactionsByPeriod(
+                    format(selectedRange[0], 'yyyy-MM-dd'),
+                    format(selectedRange[1], 'yyyy-MM-dd')
+                );
+                setTransactions(data.map(t => ({
+                    ...t,
+                    category: t.category.toLowerCase()
+                })));
             } catch (error) {
-              console.error('Ошибка загрузки:', error);
+                console.error('Ошибка загрузки:', error);
             }
-          }
-        };
-        fetchTransactions();
-      }, [selectedRange]);
-
+        }
+    };
+    fetchTransactions();
+}, [selectedRange]);
     const handleDayClick = (day) => {
         if (selectedRange[0] === null) {
             setSelectedRange([day, null])
@@ -151,37 +153,30 @@ function Analysispage() {
         ]
 
         const handleYearMonthClick = (year, monthIndex) => {
-            const monthDate = new Date(year, monthIndex, 1)
+            const monthStart = new Date(year, monthIndex, 1);
+            const monthEnd = new Date(year, monthIndex + 1, 0);
 
-            if (!selectedRange.start) {
-                setSelectedRange({ start: monthDate, end: null })
-            } else if (monthDate >= selectedRange.start && !selectedRange.end) {
-                setSelectedRange({ ...selectedRange, end: monthDate })
-            } else if (isSameDay(monthDate, selectedRange.start)) {
-                setSelectedRange({ start: null, end: null })
-            } else if (
-                selectedRange.end &&
-                isSameDay(monthDate, selectedRange.end)
-            ) {
-                setSelectedRange({ start: null, end: null })
-            } else {
-                setSelectedRange({ start: monthDate, end: null })
-            }
-        }
+            if (!selectedRange[0]) {
+        setSelectedRange([monthStart, null]);
+    } else if (!selectedRange[1] && monthStart >= selectedRange[0]) {
+        setSelectedRange([selectedRange[0], monthEnd]);
+    } else {
+        setSelectedRange([monthStart, null]);
+    }
+};
 
-        const isMonthSelected = (year, monthIndex) => {
-            if (selectedRange.start && selectedRange.end) {
-                const monthDate = new Date(year, monthIndex, 1)
-                return isWithinInterval(monthDate, {
-                    start: selectedRange.start,
-                    end: selectedRange.end,
-                })
-            } else if (selectedRange.start) {
-                const monthDate = new Date(year, monthIndex, 1)
-                return isSameDay(monthDate, selectedRange.start)
-            }
-            return false
-        }
+
+       const isMonthSelected = (year, monthIndex) => {
+    if (!selectedRange[0] || !selectedRange[1]) return false;
+    
+    const monthStart = new Date(year, monthIndex, 1);
+    const monthEnd = new Date(year, monthIndex + 1, 0);
+    
+    return (
+        monthStart >= selectedRange[0] &&
+        monthEnd <= selectedRange[1]
+    );
+};
 
         return (
             <S.YearContainer>
@@ -211,72 +206,31 @@ function Analysispage() {
         )
     }
 
-    const formatDateRangeDays = () => {
-        if (selectedRange[0] && selectedRange[1]) {
-            const startDate = selectedRange[0]
-            const endDate = selectedRange[1]
 
-            const daysDifference = differenceInDays(endDate, startDate)
-            const weeksDifference = differenceInWeeks(endDate, startDate)
-
-            if (daysDifference === 0) {
-                return format(startDate, 'd MMMM yyyy', { locale: ru })
-            } else if (daysDifference < 7 && daysDifference > 0) {
-                return `
-                    ${format(startDate, 'd MMMM yyyy', { locale: ru })}
-                    —
-                    ${format(endDate, 'd MMMM yyyy', { locale: ru })}
-                `
-            } else if (weeksDifference >= 1) {
-                const startFormatted = format(startDate, 'd MMMM yyyy', {
-                    locale: ru,
-                })
-                const endFormatted = format(endDate, 'd MMMM yyyy', {
-                    locale: ru,
-                })
-                return `
-                    ${startFormatted}
-                    —
-                    ${endFormatted}
-                `
-            } else {
-                return ' Некорректный период'
-            }
-        } else if (selectedRange[0]) {
-            return format(selectedRange[0], ' d MMMM yyyy', { locale: ru })
-        } else {
-            return ''
-        }
-    }
 
     const formatDateRange = () => {
-        const { 0: start, 1: end } = selectedRange
+    if (!selectedRange[0] || !selectedRange[1]) return '';
 
-        if (!start) {
-            return ' '
+    const start = selectedRange[0];
+    const end = selectedRange[1];
+    const formatMonthYear = (date) => {
+        const formatted = format(date, 'LLLL yyyy', { locale: ru });
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    };
+    
+    // Проверяем, находится ли период в рамках одного месяца
+    const isSameMonth = start.getMonth() === end.getMonth() && 
+                      start.getFullYear() === end.getFullYear();
+
+   if (isSameMonth) {
+            // Формат внутри месяца: "1–15 августа 2024"
+            return `${format(start, 'd', { locale: ru })} ${formatMonthYear(start)} – ${format(end, 'd', { locale: ru })} ${formatMonthYear(start)}`;
+        } else {
+            // Формат для нескольких месяцев: "Август 2024 — Октябрь 2024"
+            return `${formatMonthYear(start)} — ${formatMonthYear(end)}`;
         }
-
-        const startDate = start
-        const endDate = end || start
-
-        const startFormatted = format(startDate, ' MMMM yyyy', { locale: ru })
-        const endFormatted = format(endDate, ' MMMM yyyy', { locale: ru })
-
-        if (isSameDay(startDate, endDate)) {
-            return `${startFormatted}`
-        }
-
-        if (getYear(startDate) === getYear(endDate)) {
-            if (format(startDate, ' MMMM') === format(endDate, 'MMMM')) {
-                return ` ${startFormatted}`
-            }
-            return ` ${format(startDate, 'MMMM', {
-                locale: ru,
-            })} — ${endFormatted}`
-        }
-
-        return ` ${startFormatted} — ${endFormatted}`
-    }
+    
+};
 
     useEffect(() => {
         if (transactions.length > 0) {
@@ -331,17 +285,18 @@ function Analysispage() {
                     <S.H3>{totalExpenses.toLocaleString('ru-RU')} ₽</S.H3>
                         <S.FiltersContainer>
                             <div>
-                                Расходы за
-                                {/* {formatDateRange()} */}
-                                {formatDateRangeDays()}
+                                 Расходы за {formatDateRange()}
                             </div>
                         </S.FiltersContainer>
                         <ChartComponent 
-  expenses={transactions.map(t => ({
-    category: t.category,
-    amount: `${t.sum} ₽`,
-    sum: t.sum // Добавляем числовое значение
-  }))}
+   expenses={transactions.filter(t => {
+        const transactionDate = new Date(t.date);
+        return transactionDate >= selectedRange[0] && 
+               transactionDate <= selectedRange[1];
+    }).map(t => ({
+        category: t.category,
+        sum: t.sum
+    }))}
 />
                     </S.TableHeader>
                 </S.ExpensesTableContainer>
