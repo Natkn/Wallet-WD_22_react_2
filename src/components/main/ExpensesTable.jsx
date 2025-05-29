@@ -19,7 +19,7 @@ const ExpensesTable = ({
             </S.TableRow>
         </S.TableHead>
         <tbody>
-            {expenses && expenses.length > 0 ? (
+           {expenses && expenses.length > 0 ? (
                 expenses.map((expense, index) => (
                     <S.TableRow
                         key={index}
@@ -28,7 +28,7 @@ const ExpensesTable = ({
                         <S.TableCell>{expense.description}</S.TableCell>
                         <S.TableCell>{expense.category}</S.TableCell>
                         <S.TableCell>{expense.date}</S.TableCell>
-                        <S.TableCell>{expense.amount}</S.TableCell>
+                        <S.TableCell>{expense.amount.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}</S.TableCell>
                         <S.TableCell>
                             <S.EditButton onClick={() => onEdit(index)}>
                                 <S.EditIcon
