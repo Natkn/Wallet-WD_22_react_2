@@ -20,9 +20,10 @@ import { getTransactionsByPeriod } from '../../services/api'
 
 function Analysispage() {
     const [months, setMonths] = useState([
+        addMonths(new Date(), -2),
+        addMonths(new Date(), -1),
         new Date(),
         addMonths(new Date(), 1),
-        addMonths(new Date(), 2),
     ])
    const [selectedRange, setSelectedRange] = useState([
     startOfMonth(new Date()), 

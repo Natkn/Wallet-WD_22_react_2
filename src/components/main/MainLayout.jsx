@@ -34,6 +34,7 @@ const MainLayout = ({
     handleSortSelect,
     sortOptions,
     addExpense,
+    onDelete
 }) => (
     <S.MainBlock>
         <S.H2>Мои расходы</S.H2>
@@ -105,6 +106,7 @@ const MainLayout = ({
                         onEdit={handleEditExpense}
                         editMode={editMode}
                         editingExpenseIndex={editingExpenseIndex}
+                        onDelete={onDelete}
                     />
                 ) : (
                     <S.Table>
@@ -157,6 +159,7 @@ MainLayout.propTypes = {
             category: PropTypes.string.isRequired,
             date: PropTypes.string.isRequired,
             amount: PropTypes.string.isRequired,
+            
         })
     ).isRequired,
     newDescription: PropTypes.string.isRequired,
@@ -190,6 +193,7 @@ MainLayout.propTypes = {
     handleSortSelect: PropTypes.func.isRequired,
     addExpense: PropTypes.func.isRequired,
     sortOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    onDelete: PropTypes.func.isRequired,
 }
 
 
