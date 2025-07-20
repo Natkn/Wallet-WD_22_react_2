@@ -37,6 +37,10 @@ function MainPage() {
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Получаем токен из localStorage
+  const userData = JSON.parse(localStorage.getItem('userInfo'))
+  const token = userData?.token
+
   const {
     newDescription,
     setNewDescription,
@@ -84,9 +88,12 @@ function MainPage() {
     }
   }
 
+  // Загружаем транзакции только если token доступен
   useEffect(() => {
+    if (!token) return
     loadTransactions()
-  }, [selectedCategory, sortOrder])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, selectedCategory, sortOrder])
 
   const handleAddExpense = async () => {
     try {
@@ -108,6 +115,7 @@ function MainPage() {
         await createTransaction(transactionData)
       }
 
+      // Очистка формы
       setNewDescription('')
       setNewCategory('')
       setNewDate('')
